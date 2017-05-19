@@ -1,0 +1,42 @@
+MPLINK 5.06, LINKER
+Linker Map File - Created Sun Jul 05 08:58:11 2015
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000034
+                   .cinit    romdata   0x00001a    program   0x000004
+.config_0FFF_BUILD/DEFAULT/PRODUCTION/SOFTSTA       code   0x000fff    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x00001b      
+                            0x000fff    0x000fff      
+            29 out of 261 program addresses used, program memory utilization is 11%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     loop   0x000019    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+                  startup   0x000002    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+               wait_10sec   0x00000a    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+                wait_32ms   0x00000d    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+                 wait_sec   0x00000c    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  startup   0x000002    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+               wait_10sec   0x00000a    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+                 wait_sec   0x00000c    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+                wait_32ms   0x00000d    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+                     loop   0x000019    program     static C:\Users\ThomasTai\Documents\Rena PCB\PCIe CH382-STP\firmware\PwrTimer.X\softstart.asm
+
+
