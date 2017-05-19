@@ -1,0 +1,109 @@
+
+# 1 "../PIC18 Bootloader.asm"
+; Copyright (c) 2002-2011, Microchip Technology Inc.
+;
+; Microchip licenses this software to you solely for use with Microchip
+; products. The software is owned by Microchip and its licensors, and
+; is protected under applicable copyright laws. All rights reserved.
+;
+; SOFTWARE IS PROVIDED "AS IS." MICROCHIP EXPRESSLY DISCLAIMS ANY
+; WARRANTY OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING BUT
+; NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS
+; FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. IN NO EVENT SHALL
+; MICROCHIP BE LIABLE FOR ANY INCIDENTAL, SPECIAL, INDIRECT OR
+; CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, HARM TO YOUR
+; EQUIPMENT, COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY
+; OR SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT LIMITED
+; TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR CONTRIBUTION,
+; OR OTHER SIMILAR COSTS.
+;
+; To the fullest extent allowed by law, Microchip and its licensors
+; liability shall not exceed the amount of fees, if any, that you
+; have paid directly to Microchip to use this software.
+;
+; MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE
+; OF THESE TERMS.
+;
+; Author Date Comment
+; ************************************************************************
+; E. Schlunder 07/20/2010 Software Boot Block Write Protect code
+; improved. 96KB memory size devices should
+; work now.
+; E. Schlunder 02/26/2010 Changed order of start up code so that PLLEN
+; is enabled before we wait for RXD IDLE state.
+; This improves connection time/reliablity on
+; J devices.
+; E. Schlunder 08/28/2009 Software Boot Block Write Protect option.
+; E. Schlunder 07/09/2009 Brought back support for bootloader at
+; address 0 for hardware boot block write
+; protection on certain devices.
+; E. Schlunder 05/07/2009 Replaced the simple checksum with a
+; 16-bit CCIT CRC checksum.
+; Added ReadFlashCrc command for quick verify.
+; E. Schlunder 05/02/2009 Improved autobaud code to handle 1Mbps
+; and BRG16/BRGH.
+; E. Schlunder 05/01/2009 Added support for DEVICES.INC generated
+; from Device Database tool.
+; E. Schlunder 04/29/2009 Added support for locating the bootloader
+; at the end of program memory instead of
+; the beginning. This will eventually let us
+; use normal application firmware code without
+; linker script modifications.
+; E. Schlunder 04/26/2009 Optimized Config Write routine to avoid
+; re-writing values matching existing config
+; data.
+; E. Schlunder 04/24/2009 Optimized EEPROM Write routine a little bit.
+; Optimized FLASH Read routine to stream data
+; directly from FLASH instead of using RAM
+; buffer.
+; Added option for faster STX acknowledgements.
+; E. Schlunder 04/17/2009 Added code to enter bootloader mode if
+; a serial break condition is detected on
+; RXD as we come out of reset. This will
+; make it possible to re-enter the bootloader
+; even if the application firmware is missing
+; code to re-enter bootloader mode.
+; This also simplies the bootloader, as
+; we do not need a boot flag any more.
+; E. Schlunder 04/15/2009 Removed EOF command 8, new PC software
+; does 64 byte block aligned writes at all
+; times on J device, so there is no need for
+; this command going forward.
+; E. Schlunder 04/14/2009 Added a BootloadMode vector back at the
+; beginning of program memory so that user
+; applications can jump back into the boot
+; loader without having to erase the boot flag.
+; E. Schlunder 04/08/2009 Now initializes FSR2 to 0 so that the code
+; can operate under Extended Instruction Set
+; mode if necessary.
+; E. Schlunder 04/01/2009 Fixed bug in J_FLASH erase address increment.
+; Added support for enabling PLL.
+; Added support for inverted UART signaling.
+; Added support for fixed (non-autobaud)
+; operation, helps with debugging code under ICD.
+; E. Schlunder 03/25/2009 No longer attempts to use EEADRH on PIC18F4321.
+;
+; UART Bootloader for PIC18F by Ross Fosler
+; 09/01/2006 Modified to support PIC18xxJxx & 160k PIC18Fxxx Flash Devices
+; 03/01/2002 ... First full implementation
+; 03/07/2002 Changed entry method to use last byte of EEDATA.
+; Also removed all possible infinite loops w/ clrwdt.
+; 03/07/2002 Added code for direct boot entry. I.E. boot vector.
+; 03/09/2002 Changed the general packet format, removed the LEN field.
+; 03/09/2002 Modified the erase command to do multiple row erase.
+; 03/12/2002 Fixed write problem to CONFIG area. Write was offset by a byte.
+; 03/15/2002 Added work around for 18F8720 tblwt*+ problem.
+; 03/20/2002 Modified receive & parse engine to vector to autobaud on a checksum
+; error since a chechsum error could likely be a communications problem.
+; 03/22/2002 Removed clrwdt from the startup. This instruction affects the TO and
+; PD flags. Removing this instruction should have no affect on code
+; operation since the wdt is cleared on a reset and boot entry is always
+; on a reset.
+; 03/22/2002 Modified the protocol to incorporate the autobaud as part of the
+; first received <STX>. Doing this improves robustness by allowing
+; re-sync under any condition. Previously it was possible to enter a
+; state where only a hard reset would allow re-syncing.
+; 03/27/2002 Removed the boot vector and related code. This could lead to customer
+; issues. There is a very minute probability that errent code execution
+; could jump into the boot area and cause artificial boot entry.
+; *****************************************************************************
