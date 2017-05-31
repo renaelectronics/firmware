@@ -202,18 +202,14 @@ BootloaderStart:
     movlw   low(AppVector)      ; load address of application reset vector
     bra     BootloaderBreakCheck
 
-	ORG	    0x0008
+    ORG	    0x0008
 HighPriorityInterruptVector:
-	goto    AppHighIntVector    ; Re-map Interrupt vector
+    goto    AppHighIntVector    ; Re-map Interrupt vector
 
 BootloaderBreakCheck:
-#ifdef INVERT_UART
-    btfsc   RXPORT, RXPIN
-    bra     BootloadMode
-#else
-    btfss   RXPORT, RXPIN
-    bra     BootloadMode
-#endif
+    ; TODO: check firmware switch and branch to BootloadMode
+    bra	    BootloadMode
+    
 CheckAppVector:
     ; Read instruction at the application reset vector location. 
     ; If we read 0xFFFF, assume that the application firmware has
@@ -223,9 +219,9 @@ CheckAppVector:
     movwf   TBLPTRH
     bra     CheckAppVector2
 
-	ORG	    0x0018
+    ORG	    0x0018
 LowPriorityInterruptVector:
-	goto    AppLowIntVector     ; Re-map Interrupt vector
+    goto    AppLowIntVector     ; Re-map Interrupt vector
 
 CheckAppVector2:
     movlw   upper(AppVector)
@@ -241,6 +237,11 @@ GotoAppVector:
     ; otherwise, assume application firmware is not present because we read a NOP (0xFFFF).
     ; fall through to bootloader mode...
 BootloadMode:
+    ; Bootloader entry point
+    bsf	    TRISA, TRISA0	; set RA0 as input
+    bcf	    TRISC, TRISC6	; set RC6 as output
+    bcf	    PORTC, RC6		; set RC6=0
+  
 #endif ; end BOOTLOADER_ADDRESS == 0 ******************************************
     lfsr    FSR2, 0             ; for compatibility with Extended Instructions mode.
 
@@ -263,14 +264,6 @@ BootloadMode:
             bsf     OSCTUNE, SPLLEN     ; PIC18F14K50 has SPLLEN at bit 6
         #endif
     #endif
-#endif
-
-#ifdef INVERT_UART
-    btfsc   RXPORT, RXPIN       ; wait for RX pin to go IDLE
-    bra     $-2
-#else
-    btfss   RXPORT, RXPIN       ; wait for RX pin to go IDLE
-    bra     $-2
 #endif
 
 #ifdef PPS_UTX_PIN
@@ -298,99 +291,17 @@ BootloadMode:
     movlb   0x0F
 #endif
 
-    movlw   b'10010000'         ; Setup UART
-    movwf   UxRCSTA
-    movlw   b'00100110'         ; BRGH = 1, TXEN = 1
-    movwf   UxTXSTA
-
-#ifdef INVERT_UART
-    bsf     UxBAUDCON, RXDTP
-    bsf     UxBAUDCON, TXCKP
-#endif
-
-#ifdef BRG16
-    bsf     UxBAUDCON, BRG16
-    movlw   b'00000010'         ; 1:8 prescaler - no division required later (but no rounding possible)
-#else
-    movlw   b'00000011'         ; 1:16 prescaler - thus we only have to divide by 2 later on.
-#endif
-    movwf   T0CON
-
 #ifdef PICDEM_LCD2
     bsf     LATB, LATB0         ; PICDEM LCD 2 demoboard requires RB0 high to enable MAX3221 TX output to PC.
     bcf     TRISB, TRISB0
 #endif
 ; *****************************************************************************
-
-
-; *****************************************************************************
-#ifdef USE_AUTOBAUD
-DoAutoBaud:
-; ___    __________            ________
-;    \__/          \__________/
-;       |                     |
-;       |-------- p ----------|
-;
-;   p = The number of instructions between the first and last
-;           rising edge of the RS232 control sequence 0x0F. Other 
-;       possible control sequences are 0x01, 0x03, 0x07, 0x1F, 
-;       0x3F, 0x7F.
-;
-;   SPBRG = (p / 32) - 1    BRGH = 1, BRG16 = 0
-;   SPBRG = (p / 8) - 1     BRGH = 1, BRG16 = 1
-
-    bcf     UxRCSTA, CREN       ; Stop receiving
-    movf    UxRCREG, W          ; Empty the buffer
-    movf    UxRCREG, W
-
-RetryAutoBaud:
-    clrf    TMR0H               ; reset timer count value
-    clrf    TMR0L
-    bcf     INTCON, TMR0IF
-    rcall   WaitForRise         ; wait for a start bit to pass by
-    bsf     T0CON, TMR0ON       ; start timer counting for entire D7..D0 data bit period.
-    rcall   WaitForRise         ; wait for stop bit
-    bcf     T0CON, TMR0ON       ; stop the timer from counting further. 
-
-    btfsc   INTCON, TMR0IF      ; if TMR0 overflowed, we did not get a good baud capture
-    bra     RetryAutoBaud       ; try again
-
-    #ifdef BRG16
-    ; save new baud rate generator value
-    movff   TMR0L, UxSPBRG      ; warning: must read TMR0L before TMR0H holds real data
-    movff   TMR0H, UxSPBRGH
-    #else 
-    movff   TMR0L, UxSPBRG      ; warning: must read TMR0L before TMR0H holds real data
-    ; TMR0H:TMR0L holds (p / 16).
-    rrcf    TMR0H, w            ; divide by 2
-    rrcf    UxSPBRG, F            
-    btfss   STATUS, C           ; rounding
-    decf    UxSPBRG, F    
-    #endif
-
-    bsf     UxRCSTA, CREN       ; start receiving
-
-WaitForHostCommand:
-    rcall   ReadHostByte        ; get start of transmission <STX>
-    xorlw   STX
-    bnz     DoAutoBaud          ; got something unexpected, perform autobaud
-#else ; not using autobaud
-    movlw   low(BAUDRG)         ; set fixed baud rate generator value
-    movwf   UxSPBRG
-    #ifdef UxSPBRGH
-        #if high(BAUDRG) != 0
-    movlw   high(BAUDRG)
-    movwf   UxSPBRGH
-        #endif
-    #endif
-    bsf     UxRCSTA, CREN       ; start receiving
+; WaitForHostCommand    
 DoAutoBaud:
 WaitForHostCommand:
     rcall   ReadHostByte        ; get start of transmission <STX>
     xorlw   STX
     bnz     WaitForHostCommand  ; got something unexpected, keep waiting for <STX>
-#endif ; end #ifdef USE_AUTOBAUD
-        
 ; *****************************************************************************
 
 ; *****************************************************************************
