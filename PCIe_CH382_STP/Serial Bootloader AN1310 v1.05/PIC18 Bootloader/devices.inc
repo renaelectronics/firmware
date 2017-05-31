@@ -1149,6 +1149,22 @@
      #define END_GPR                 0x300
 #endif
 
+     #ifdef __18LF2321
+     #define DEVICEID                .265
+     #define WRITE_FLASH_BLOCKSIZE   .8
+     #define ERASE_FLASH_BLOCKSIZE   .64
+     #define END_FLASH               0x2000
+     #define END_GPR                 0x200
+#endif
+
+#ifdef __18LF2331
+     #define DEVICEID                .71
+     #define WRITE_FLASH_BLOCKSIZE   .8
+     #define ERASE_FLASH_BLOCKSIZE   .64
+     #define END_FLASH               0x2000
+     #define END_GPR                 0x300
+#endif
+          
 #ifdef __18F2410
      #define DEVICEID                .139
      #define WRITE_FLASH_BLOCKSIZE   .32
