@@ -136,11 +136,25 @@ ADDRESS_X           equ 0x09
 DATA_COUNTL         equ 0x0A
 PACKET_DATA         equ 0x0B
 DATA_COUNTH         equ 0x0B        ; only for certain commands
+	 
 ; *****************************************************************************
 
 ; *****************************************************************************
     errorlevel -311                 ; don't warn on HIGH() operator values >16-bits
 
+; bit banding read function
+#define INCLK	RA0
+#define INDATA	RA1
+DoReadHostByte macro pos
+    bcf	    RXDATA, pos		; clear RXDATA bit 
+    btfss   PORTA, INCLK	; wait RA0 go high
+    bra	    $-2
+    btfsc   PORTA, INDATA	; if INDATA == 1 then set RXDATA
+    bsf	    RXDATA, pos
+    btfsc   PORTA, INCLK	; wait RA0 go low
+    bra	    $-2
+    endm
+    
 #ifdef USE_SOFTBOOTWP
   #ifndef SOFTWP
     #define SOFTWP
@@ -238,7 +252,8 @@ GotoAppVector:
     ; fall through to bootloader mode...
 BootloadMode:
     ; Bootloader entry point
-    bsf	    TRISA, TRISA0	; set RA0 as input
+    bsf	    TRISA, TRISA0	; set RA0 as input clock
+    bsf	    TRISA, TRISA1	; set RA1 as input data
     bcf	    TRISC, TRISC6	; set RC6 as output
     bcf	    PORTC, RC6		; set RC6=0
   
@@ -930,23 +945,20 @@ SendHostByte:
     return
 ; *****************************************************************************
 
-
-
-
 ; *****************************************************************************
 ReadHostByte:
-    btfsc   UxRCSTA, OERR       ; Reset on overun
-    reset
-
-WaitForHostByte:
-    clrwdt
-    btfss   UxPIR, UxRCIF       ; Wait for data from RS232
-    bra     WaitForHostByte
-
-    movf    UxRCREG, W          ; Save the data
-    movwf   RXDATA
- 
+    clrf    RXDATA
+    DoReadHostByte 0
+    DoReadHostByte 1
+    DoReadHostByte 2
+    DoReadHostByte 3
+    DoReadHostByte 4
+    DoReadHostByte 5
+    DoReadHostByte 6
+    DoReadHostByte 7
+    movf    RXDATA, W	; W reg = contents of RXDATA
     return
+    
 ; *****************************************************************************
 
     reset                       ; this code -should- never be executed, but 
