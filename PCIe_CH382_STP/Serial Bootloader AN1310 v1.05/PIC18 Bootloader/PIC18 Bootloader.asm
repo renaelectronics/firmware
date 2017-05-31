@@ -106,6 +106,7 @@
 ;       could jump into the boot area and cause artificial boot entry.
 ; *****************************************************************************
 #include <p18cxxx.inc>
+#include "configure.inc"
 #include "devices.inc"
 #include "bootconfig.inc"
 #include "preprocess.inc"
