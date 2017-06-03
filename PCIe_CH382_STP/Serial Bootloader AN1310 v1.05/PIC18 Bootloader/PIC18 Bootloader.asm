@@ -145,7 +145,16 @@ DATA_COUNTH         equ 0x0B        ; only for certain commands
 ; bit banding read function
 #define INCLK	RA0
 #define INDATA	RA1
-DoReadHostByte macro pos
+
+ClrOutdata macro
+    bcf	    PORTC, RC6
+    endm
+    
+SetOutdata macro
+    bsf	    PORTC, RC6
+    endm
+
+DoReadHostBit macro pos
     bcf	    RXDATA, pos		; clear RXDATA bit 
     btfss   PORTA, INCLK	; wait RA0 go high
     bra	    $-2
@@ -153,6 +162,19 @@ DoReadHostByte macro pos
     bsf	    RXDATA, pos
     btfsc   PORTA, INCLK	; wait RA0 go low
     bra	    $-2
+    endm
+    
+DoWriteHostByte macro data pos
+    ; pre
+    ClrOutdata			; make sure outdata is 0
+    btfss   PORTA, INCLK	; wait RA0 go high
+    bra	    $-2
+    SetOutdata
+    btfsc   PORTA, INCLK	; wait RA0 go low
+    bra	    $-2
+    ; start transmit data
+    
+    ; pos
     endm
     
 #ifdef USE_SOFTBOOTWP
@@ -322,9 +344,6 @@ WaitForHostCommand:
 ; *****************************************************************************
 ; Read and parse packet data.
 StartOfLine:
-    movlw   STX                     ; send back start of response
-    rcall   SendHostByte
-
     lfsr    FSR0, COMMAND-1         ; Point to the buffer
         
 ReceiveDataLoop:
@@ -407,6 +426,12 @@ CheckCommand:
     messg   "Wasting some code space to ensure jump table is aligned."
     ORG     $+(0x100 - ($ & 0xFF))
 #endif
+    
+    ; send back start of response
+    movlw   STX
+    rcall   SendHostByte
+
+    ; jump to hand commands
 JUMPTABLE_BEGIN:
     movf    PCL, w              ; 0 do a read of PCL to set PCLATU:PCLATH to current program counter.
     rlncf   COMMAND, W          ; 2 multiply COMMAND by 2 (each BRA instruction takes 2 bytes on PIC18)
@@ -948,14 +973,14 @@ SendHostByte:
 ; *****************************************************************************
 ReadHostByte:
     clrf    RXDATA
-    DoReadHostByte 0
-    DoReadHostByte 1
-    DoReadHostByte 2
-    DoReadHostByte 3
-    DoReadHostByte 4
-    DoReadHostByte 5
-    DoReadHostByte 6
-    DoReadHostByte 7
+    DoReadHostBit 0
+    DoReadHostBit 1
+    DoReadHostBit 2
+    DoReadHostBit 3
+    DoReadHostBit 4
+    DoReadHostBit 5
+    DoReadHostBit 6
+    DoReadHostBit 7
     movf    RXDATA, W	; W reg = contents of RXDATA
     return
     
