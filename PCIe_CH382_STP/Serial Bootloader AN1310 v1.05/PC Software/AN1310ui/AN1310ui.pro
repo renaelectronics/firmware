@@ -1,6 +1,8 @@
 TARGET = "AN1310ui"
 TEMPLATE = app
 QT += sql
+QT += widgets
+QT += concurrent
 QMAKE_CXXFLAGS_RELEASE = -Os
 INCLUDEPATH += ../
 SOURCES += main.cpp \
@@ -25,8 +27,8 @@ HEADERS += MainWindow.h \
     HexExporter.h
 unix { 
     DEFINES += _TTY_POSIX_
-    LIBS += -L../QextSerialPort
-    LIBS += -L../Bootload
+    LIBS += -L../build-QextSerialPort-Desktop_Qt_5_9_0_GCC_64bit-Debug
+    LIBS += -L../build-Bootload-Desktop_Qt_5_9_0_GCC_64bit-Debug
     LIBS += -lBootload \
         -lQextSerialPort
 }

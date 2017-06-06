@@ -29,7 +29,7 @@
 *                           QTextEdit widget.
 ************************************************************************/
 
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <QKeyEvent>
 #include <QTime>
 #include <QFile>
@@ -194,7 +194,7 @@ void QSerialTerminal::keyPressEvent(QKeyEvent* event)
 
     if(serial != NULL)
     {
-        char data = event->text().toAscii()[0];
+        char data = event->text().toLatin1()[0];
         int key = event->key();
 
         switch(key)
