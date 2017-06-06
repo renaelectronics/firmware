@@ -8,6 +8,23 @@ Windows      - ftp://ftp.qt.nokia.com/qtsdk/qt-sdk-win-opensource-2010.01.exe
 32-bit Linux - ftp://ftp.qt.nokia.com/qtsdk/qt-sdk-linux-x86-opensource-2010.01.bin
 64-bit Linux - ftp://ftp.qt.nokia.com/qtsdk/qt-sdk-linux-x86_64-opensource-2010.01.bin
 
+-------------------------------------------------------------------------------
+(*) Notes from myself:
+
+in ubuntu:
+sudo apt-get install -y build-essential
+sudo apt-get install -y libxext-dev
+./configure -static -release
+
+
+(*) to reconfigure qt
+Qt is now configured for building. Just run 'make'.
+Once everything is built, you must run 'make install'.
+Qt will be installed into /usr/local/Trolltech/Qt-4.6.1
+
+To reconfigure, run 'make confclean' and 'configure'
+-------------------------------------------------------------------------------
+
 The AN1310 installation package incorporates re-compiled Qt runtime DLLs 
 optimized to minimize file size and memory footprint. However, none of 
 the Qt source code was modified and the original Qt DLLs can be substituted 
