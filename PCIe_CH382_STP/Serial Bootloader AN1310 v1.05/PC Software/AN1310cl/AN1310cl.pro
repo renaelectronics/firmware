@@ -2,6 +2,7 @@
 # Project created by QtCreator 2010-08-02T17:44:13
 # -------------------------------------------------
 QT += sql
+QT += widgets
 QT -= gui
 TARGET = AN1310cl
 CONFIG += console
@@ -13,8 +14,8 @@ SOURCES += main.cpp \
     Bootload.cpp
 unix {
     DEFINES += _TTY_POSIX_
-    LIBS += -L../QextSerialPort
-    LIBS += -L../Bootload
+    LIBS += -L../build-QextSerialPort-Desktop_Qt_5_9_0_GCC_64bit-Debug
+    LIBS += -L../build-Bootload-Desktop_Qt_5_9_0_GCC_64bit-Debug
 }
 
 win32 { 

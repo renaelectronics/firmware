@@ -12,8 +12,7 @@ Windows      - ftp://ftp.qt.nokia.com/qtsdk/qt-sdk-win-opensource-2010.01.exe
 (*) Notes from myself:
 
 in ubuntu:
-sudo apt-get install qtcreator
-sudo apt-get install qtubuntu-desktop
+https://packages.ubuntu.com/precise/libgl1-mesa-dev
 
 -------------------------------------------------------------------------------
 
