@@ -12,17 +12,9 @@ Windows      - ftp://ftp.qt.nokia.com/qtsdk/qt-sdk-win-opensource-2010.01.exe
 (*) Notes from myself:
 
 in ubuntu:
-sudo apt-get install -y build-essential
-sudo apt-get install -y libxext-dev
-./configure -static -release
+sudo apt-get install qtcreator
+sudo apt-get install qtubuntu-desktop
 
-
-(*) to reconfigure qt
-Qt is now configured for building. Just run 'make'.
-Once everything is built, you must run 'make install'.
-Qt will be installed into /usr/local/Trolltech/Qt-4.6.1
-
-To reconfigure, run 'make confclean' and 'configure'
 -------------------------------------------------------------------------------
 
 The AN1310 installation package incorporates re-compiled Qt runtime DLLs 
