@@ -45,7 +45,11 @@ const int Comm::SyncWaitTime = 50;
 
 Comm::Comm()
 {
+#ifdef USE_SERIAL
     serial = new QextSerialPort();
+#else
+    serial = new BitBangPort();
+#endif
 }
 
 Comm::~Comm()

@@ -42,7 +42,11 @@ class Comm
 protected:
 
 public:
+#ifdef USE_SERIAL
     QextSerialPort *serial;
+#else
+    QextBitBangPort *serial;
+#endif
 
     Comm();
     ~Comm();
