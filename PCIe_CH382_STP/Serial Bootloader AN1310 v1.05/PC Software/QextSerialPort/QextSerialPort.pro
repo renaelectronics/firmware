@@ -15,7 +15,8 @@ SOURCES += qextserialenumerator.cpp \
 
 HEADERS += qextserialenumerator.h \
     qextserialport.h \
-    qextserialbase.h
+    qextserialbase.h \
+    qextbitbangport.h
 
 unix {
     HEADERS += posix_qextserialport.h

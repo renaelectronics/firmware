@@ -30,8 +30,11 @@
 
 #ifndef COMM_H
 #define COMM_H
-
+#ifdef USE_SERIAL
 #include "QextSerialPort/qextserialport.h"
+#else
+#include "QextSerialPort/qextbitbangport.h"
+#endif
 #include "Device.h"
 
 /*!
