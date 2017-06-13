@@ -8,6 +8,14 @@ Windows      - ftp://ftp.qt.nokia.com/qtsdk/qt-sdk-win-opensource-2010.01.exe
 32-bit Linux - ftp://ftp.qt.nokia.com/qtsdk/qt-sdk-linux-x86-opensource-2010.01.bin
 64-bit Linux - ftp://ftp.qt.nokia.com/qtsdk/qt-sdk-linux-x86_64-opensource-2010.01.bin
 
+-------------------------------------------------------------------------------
+(*) Notes from myself:
+
+in ubuntu:
+https://packages.ubuntu.com/precise/libgl1-mesa-dev
+
+-------------------------------------------------------------------------------
+
 The AN1310 installation package incorporates re-compiled Qt runtime DLLs 
 optimized to minimize file size and memory footprint. However, none of 
 the Qt source code was modified and the original Qt DLLs can be substituted 

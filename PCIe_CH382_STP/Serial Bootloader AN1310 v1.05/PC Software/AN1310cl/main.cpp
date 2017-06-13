@@ -38,12 +38,12 @@ using namespace std;
 #include "Bootload.h"
 #include "../version.h"
 
-void MessageOutput(QtMsgType type, const char *msg);
+void MessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 bool quiet = false;
 
 int main(int argc, char *argv[])
 {
-    qInstallMsgHandler(MessageOutput);
+    qInstallMessageHandler(MessageOutput);
     QCoreApplication a(argc, argv);
     Bootload w;
 
@@ -239,24 +239,24 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
-void MessageOutput(QtMsgType type, const char *msg)
- {
-    switch (type)
-    {
+void MessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch (type) {
     case QtDebugMsg:
-        // let's suppress debug and warning messages from the console for now
+        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
-
+    case QtInfoMsg:
+        fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
     case QtWarningMsg:
-        // let's suppress debug and warning messages from the console for now
+        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
-
     case QtCriticalMsg:
-        cerr << msg << endl;
+        fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
-
     case QtFatalMsg:
-        cerr << msg << endl;
-        break;
+        fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        abort();
     }
- }
+}

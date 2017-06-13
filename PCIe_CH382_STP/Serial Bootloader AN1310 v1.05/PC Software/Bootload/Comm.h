@@ -30,8 +30,11 @@
 
 #ifndef COMM_H
 #define COMM_H
-
+#ifdef USE_SERIAL
 #include "QextSerialPort/qextserialport.h"
+#else
+#include "QextSerialPort/qextbitbangport.h"
+#endif
 #include "Device.h"
 
 /*!
@@ -42,7 +45,11 @@ class Comm
 protected:
 
 public:
+#ifdef USE_SERIAL
     QextSerialPort *serial;
+#else
+    QextBitBangPort *serial;
+#endif
 
     Comm();
     ~Comm();

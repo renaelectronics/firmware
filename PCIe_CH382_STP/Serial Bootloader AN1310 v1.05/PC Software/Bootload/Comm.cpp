@@ -45,7 +45,11 @@ const int Comm::SyncWaitTime = 50;
 
 Comm::Comm()
 {
+#ifdef USE_SERIAL
     serial = new QextSerialPort();
+#else
+    serial = new BitBangPort();
+#endif
 }
 
 Comm::~Comm()
@@ -676,7 +680,7 @@ Comm::BootInfo Comm::ReadBootloaderInfo(int timeout)
     qWarning("get packet: %fs", (double)elapsed.elapsed() / 1000);
     if(result != Success)
     {
-        qWarning(ErrorString(result).toAscii());
+        qWarning(ErrorString(result).toLatin1());
         return bootInfo;
     }
 

@@ -11,15 +11,18 @@ CONFIG += staticlib
 QMAKE_CXXFLAGS_RELEASE = -Os
 SOURCES += qextserialenumerator.cpp \
     qextserialport.cpp \
-    qextserialbase.cpp \
+    qextserialbase.cpp
 
 HEADERS += qextserialenumerator.h \
     qextserialport.h \
     qextserialbase.h \
+    qextbitbangport.h
 
 unix {
     HEADERS += posix_qextserialport.h
+    HEADERS += posix_qextbitbangport.h
     SOURCES += posix_qextserialport.cpp
+    SOURCES += posix_qextbitbangport.cpp
     DEFINES += _TTY_POSIX_
 }
 win32 {
