@@ -159,7 +159,11 @@ QList<QextPortInfo> QextSerialEnumerator::getPorts()
         devices.setFilter(QDir::System | QDir::Readable | QDir::Writable);
 
         QStringList filters;
+#if USE_SERIAL
         filters << "ttyS*" << "ttyUSB*" << "ttyACM*";
+#else
+        filters << "parport*";
+#endif
         devices.setNameFilters(filters);
 
         QStringList deviceList;
@@ -167,10 +171,17 @@ QList<QextPortInfo> QextSerialEnumerator::getPorts()
         QextPortInfo info;
         if(deviceList.isEmpty())
         {
+#if USE_SERIAL
             info.friendName = "Serial Port (/dev/serial)";
             info.physName = "/dev/serial";
             info.enumName = "/dev/serial";
             info.portName = "/dev/serial";
+#else
+            info.friendName = "Parallel Port (/dev/parport)";
+            info.physName = "/dev/parport";
+            info.enumName = "/dev/parport";
+            info.portName = "/dev/parport";
+#endif
             ports.append(info);
         }
         else

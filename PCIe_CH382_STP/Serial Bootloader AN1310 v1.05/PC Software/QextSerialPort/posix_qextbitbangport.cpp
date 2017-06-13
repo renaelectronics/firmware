@@ -547,8 +547,8 @@ bool Posix_QextBitBangPort::open(OpenMode mode)
             /*set open mode*/
             QIODevice::open(mode);
 
-            /*configure port settings*/
-            tcgetattr(Posix_File->handle(), &Posix_CommConfig);
+            /*configure port settings, claim the port, set mode, and pin direction */
+            ioctl(Posix_File->handle(), , );
 
             /*set up other port settings*/
             Posix_CommConfig.c_cflag|=CREAD|CLOCAL;
