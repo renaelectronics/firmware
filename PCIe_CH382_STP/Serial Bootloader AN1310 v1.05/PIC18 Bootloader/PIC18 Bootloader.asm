@@ -136,7 +136,6 @@ ADDRESS_X           equ 0x09
 DATA_COUNTL         equ 0x0A
 PACKET_DATA         equ 0x0B
 DATA_COUNTH         equ 0x0B        ; only for certain commands
-	 
 ; *****************************************************************************
 
 ; *****************************************************************************
@@ -145,36 +144,104 @@ DATA_COUNTH         equ 0x0B        ; only for certain commands
 ; bit banding read function
 #define INCLK	RA0
 #define INDATA	RA1
+#define CS	RA2    ; lo=normal, hi=reset
+#define OUTDATA	RC6    
 
-ClrOutdata macro
-    bcf	    PORTC, RC6
+ClrOutData macro
+    bcf	    PORTC, OUTDATA
     endm
     
-SetOutdata macro
-    bsf	    PORTC, RC6
+SetOutData macro
+    bsf	    PORTC, OUTDATA
     endm
 
+ToggleOutData macro
+    btg	    PORTC, OUTDATA
+    endm
+
+; Host must set the INDATA before rising INCLK    
 DoReadHostBit macro pos
+    local   b1
+    local   b2
     bcf	    RXDATA, pos		; clear RXDATA bit 
-    btfss   PORTA, INCLK	; wait RA0 go high
-    bra	    $-2
+b1:    
+    btfsc   PORTA, CS
+    goto    BootloaderStart
+    btfss   PORTA, INCLK	; wait clock go high
+    bra	    b1
     btfsc   PORTA, INDATA	; if INDATA == 1 then set RXDATA
     bsf	    RXDATA, pos
-    btfsc   PORTA, INCLK	; wait RA0 go low
-    bra	    $-2
+b2:    
+    btfsc   PORTA, CS
+    goto    BootloaderStart
+    btfsc   PORTA, INCLK	; wait clock go low
+    bra	    b2
     endm
     
-DoWriteHostByte macro data pos
-    ; pre
-    ClrOutdata			; make sure outdata is 0
-    btfss   PORTA, INCLK	; wait RA0 go high
-    bra	    $-2
-    SetOutdata
-    btfsc   PORTA, INCLK	; wait RA0 go low
-    bra	    $-2
-    ; start transmit data
+; Host need to wait until OutData go high
+; Host put data on InData, clock high, wait OutData to toggle, clock low
+DoReadHostByte macro
+    ; Ready to receive
+    DoReadHostBit 0
+    DoReadHostBit 1
+    DoReadHostBit 2
+    DoReadHostBit 3
+    DoReadHostBit 4
+    DoReadHostBit 5
+    DoReadHostBit 6
+    DoReadHostBit 7
+    ; W reg = contents of RXDATA
+    movf    RXDATA, W
+    ; Not ready to receive
+    ClrOutData
+    endm
     
-    ; pos
+DoWriteHostBit macro pos
+    local b1
+    local b2
+    local clrbit
+    local setbit
+    local donebit
+    ; check CS and clock high
+b1:    
+    btfsc   PORTA, CS
+    goto    BootloaderStart
+    btfss   PORTA, INCLK
+    bra	    b1
+    ; copy TXDATA bit to output data pin
+    btfsc   TXDATA, pos
+    goto    setbit
+clrbit:
+    ClrOutData
+    goto    donebit
+setbit:
+    SetOutData
+    goto    donebit
+donebit:
+b2:    
+    ; check CS and clock low
+    btfsc   PORTA, CS
+    goto    BootloaderStart
+    btfsc   PORTA, INCLK
+    bra	    b2
+    endm
+ 
+; Host need to wait until OutData is high
+; Then set clock high, wait 1 ms, read OutData, clock low for 1 ms 
+DoWriteHostByte macro 
+    ; Tx data ready
+    SetOutData
+    ; Tx data
+    DoWriteHostBit(0)
+    DoWriteHostBit(1)
+    DoWriteHostBit(2)
+    DoWriteHostBit(3)
+    DoWriteHostBit(4)
+    DoWriteHostBit(5)
+    DoWriteHostBit(6)
+    DoWriteHostBit(7)
+    ; Tx data done
+    ClrOutData
     endm
     
 #ifdef USE_SOFTBOOTWP
@@ -218,7 +285,6 @@ BootloaderStart:
 ; enter bootloader mode, even if there exists some application firmware in 
 ; program memory.
 BootloaderBreakCheck:
-    DigitalInput                ; set RX pin as digital input on certain parts
 #ifdef INVERT_UART
     btfss   RXPORT, RXPIN
 GotoAppVector:
@@ -230,11 +296,9 @@ GotoAppVector:
 #endif
 
 BootloadMode:
-    DigitalInput                ; set RX pin as digital input on certain parts
 #else ; BOOTLOADER_ADDRESS == 0 ****************************************************************
     ORG     0
 BootloaderStart:
-    DigitalInput                ; set RX pin as digital input on certain parts
     movlw   low(AppVector)      ; load address of application reset vector
     bra     BootloaderBreakCheck
 
@@ -274,11 +338,39 @@ GotoAppVector:
     ; fall through to bootloader mode...
 BootloadMode:
     ; Bootloader entry point
+    bsf	    ADCON1, PCFG0	; set RA as digital port PCFG3:PCFG0 = 1111
+    bsf	    ADCON1, PCFG1
+    bsf	    ADCON1, PCFG2
+    bsf	    ADCON1, PCFG3
+    
     bsf	    TRISA, TRISA0	; set RA0 as input clock
     bsf	    TRISA, TRISA1	; set RA1 as input data
+    bsf	    TRISA, TRISA2	; set RA2 as input cs
     bcf	    TRISC, TRISC6	; set RC6 as output
     bcf	    PORTC, RC6		; set RC6=0
-  
+
+    ; loopback test
+#if (0)    
+LoopbackMode:
+    btfss   PORTA, RA0
+    goto    LoopbackMode_1
+    bsf	    PORTC, RC6
+    bra	    LoopbackMode
+LoopbackMode_1:
+    bcf	    PORTC, RC6
+    bra	    LoopbackMode
+#endif
+        
+#if (1)
+LoopbackMode:
+    DoReadHostByte
+    movf    RXDATA, W	; WREG = RXDATA
+    movwf   TXDATA	; TXDATA = WREG
+    DoWriteHostByte
+    bra	    LoopbackMode
+#endif    
+    
+     
 #endif ; end BOOTLOADER_ADDRESS == 0 ******************************************
     lfsr    FSR2, 0             ; for compatibility with Extended Instructions mode.
 
@@ -341,9 +433,17 @@ WaitForHostCommand:
     bnz     WaitForHostCommand  ; got something unexpected, keep waiting for <STX>
 ; *****************************************************************************
 
+; -----------------------------------------------------------------------------    
+; Notes:    
+; Host send the first <STX> then it must wait and receive <STX> from bootloader
+; -----------------------------------------------------------------------------    
+
 ; *****************************************************************************
 ; Read and parse packet data.
 StartOfLine:
+    movlw   STX                     ; send back start of response
+    rcall   SendHostByte
+
     lfsr    FSR0, COMMAND-1         ; Point to the buffer
         
 ReceiveDataLoop:
@@ -426,12 +526,6 @@ CheckCommand:
     messg   "Wasting some code space to ensure jump table is aligned."
     ORG     $+(0x100 - ($ & 0xFF))
 #endif
-    
-    ; send back start of response
-    movlw   STX
-    rcall   SendHostByte
-
-    ; jump to hand commands
 JUMPTABLE_BEGIN:
     movf    PCL, w              ; 0 do a read of PCL to set PCLATU:PCLATH to current program counter.
     rlncf   COMMAND, W          ; 2 multiply COMMAND by 2 (each BRA instruction takes 2 bytes on PIC18)
@@ -454,8 +548,8 @@ JUMPTABLE_BEGIN:
 
 #ifdef INVERT_UART
 WaitForRise:
-    clrwdt
-
+    nop
+    
 WaitForRiseLoop:
     btfsc   INTCON, TMR0IF  ; if TMR0 overflowed, we did not get a good baud capture
     return                  ; abort
@@ -469,7 +563,7 @@ WtSR:
     return
 #else ; not inverted UART pins
 WaitForRise:
-    clrwdt
+    nop
 
 WaitForRiseLoop
     btfsc   INTCON, TMR0IF  ; if TMR0 overflowed, we did not get a good baud capture
@@ -961,29 +1055,14 @@ WrNext:
     movf    TXDATA, W       ; Then send STX
 
 SendHostByte:
-    clrwdt
-    btfss   UxPIR, UxTXIF      ; Write only if TXREG is ready
-    bra     $-2
-    
-    movwf   UxTXREG           ; Start sending
-
+    DoWriteHostByte
     return
 ; *****************************************************************************
 
 ; *****************************************************************************
 ReadHostByte:
-    clrf    RXDATA
-    DoReadHostBit 0
-    DoReadHostBit 1
-    DoReadHostBit 2
-    DoReadHostBit 3
-    DoReadHostBit 4
-    DoReadHostBit 5
-    DoReadHostBit 6
-    DoReadHostBit 7
-    movf    RXDATA, W	; W reg = contents of RXDATA
+    DoReadHostByte
     return
-    
 ; *****************************************************************************
 
     reset                       ; this code -should- never be executed, but 
@@ -998,8 +1077,6 @@ TableWriteWREG:
     tblwt   *
 
 StartWrite:
-    clrwdt
-
     movlw   0x55            ; Unlock
     movwf   EECON2
     movlw   0xAA
