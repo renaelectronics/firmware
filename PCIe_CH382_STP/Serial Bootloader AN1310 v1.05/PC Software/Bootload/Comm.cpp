@@ -48,7 +48,7 @@ Comm::Comm()
 #ifdef USE_SERIAL
     serial = new QextSerialPort();
 #else
-    serial = new BitBangPort();
+    serial = new QextBitBangPort();
 #endif
 }
 
