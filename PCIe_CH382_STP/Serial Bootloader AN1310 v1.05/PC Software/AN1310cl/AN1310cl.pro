@@ -16,6 +16,8 @@ unix {
     DEFINES += _TTY_POSIX_
     LIBS += -L../build-QextSerialPort-Desktop_Qt_5_9_0_GCC_64bit-Debug
     LIBS += -L../build-Bootload-Desktop_Qt_5_9_0_GCC_64bit-Debug
+    #LIBS += build-QextSerialPort-Desktop_Qt_5_5_1_GCC_32bit-Debug
+    #LIBS += build-Bootload-Desktop_Qt_5_5_1_GCC_32bit-Debug
 }
 
 win32 { 

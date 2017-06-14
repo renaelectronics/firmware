@@ -32,7 +32,11 @@
 #include "BootPackets.h"
 #include "Crc.h"
 
+#ifdef USE_SERIAL
 #include "QextSerialPort/qextserialport.h"
+#else
+#include "QextSerialPort/qextbitbangport.h"
+#endif
 #include "QextSerialPort/qextserialbase.h"
 
 #include <QByteArray>
