@@ -14,6 +14,13 @@
 
 #include "qextserialbase.h"
 
+/*
+ * set and clr pin
+ */
+#define CLK     (0)
+#define OUTPIN  (1)
+#define CS      (2)
+
 /*!
  * This class encapsulates the Posix (Linux) portion of QextBitBangPort.
  */
@@ -68,6 +75,13 @@ public:
     virtual void setDtr(bool set=true);
     virtual void setRts(bool set=true);
     virtual ulong lineStatus();
+
+    /* bitbanging operations */
+    void dprint(char data);
+    int set_pin(int data, int pin);
+    int clr_pin(int data, int pin);
+    void pulse_cs(void);
+
 };
 
 #endif // POSIX_QEXTBITBANGPORT_H
