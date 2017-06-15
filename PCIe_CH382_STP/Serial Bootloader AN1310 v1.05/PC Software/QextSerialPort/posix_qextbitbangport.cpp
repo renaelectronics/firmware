@@ -4,6 +4,9 @@
 */
 
 #include <stdio.h>
+#include <sys/ioctl.h>
+#include <linux/parport.h>
+#include <linux/ppdev.h>
 #include "posix_qextbitbangport.h"
 
 /*!
@@ -530,6 +533,9 @@ The port is also configured to the current settings, as stored in the Settings s
 */
 bool Posix_QextBitBangPort::open(OpenMode mode)
 {
+    int ppmode;
+    int ppdir;
+
     LOCK_MUTEX();
     if (mode == QIODevice::NotOpen)
     {
@@ -547,8 +553,37 @@ bool Posix_QextBitBangPort::open(OpenMode mode)
             /*set open mode*/
             QIODevice::open(mode);
 
-            /*configure port settings, claim the port, set mode, and pin direction */
-            /* ioctl(Posix_File->handle(), , ); */
+            /* configure port settings, claim the port, set mode, and pin direction */
+            if (ioctl(Posix_File->handle(), PPCLAIM, NULL))
+            {
+                 qDebug("Could not claim parallel port " + port.toLatin1());
+                 close();
+                 Posix_File->close();
+                 goto error_exit;
+            }
+
+            /* Set the Mode */
+            ppmode = IEEE1284_MODE_BYTE;
+            if (ioctl(Posix_File->handle(), PPSETMODE, &ppmode))
+            {
+                qDebug("Could not set mode");
+                ioctl(Posix_File->handle(), PPRELEASE);
+                close();
+                Posix_File->close();
+                goto error_exit;
+             }
+
+            /* Set data pins to output */
+            ppdir = 0x00;
+            if (ioctl(Posix_File->handle(), PPDATADIR, &ppdir))
+            {
+                qDebug("Could not set parallel port direction");
+                ioctl(Posix_File->handle(), PPRELEASE);
+                close();
+                Posix_File->close();
+                goto error_exit;
+ 
+            }
 
             /*set up other port settings*/
             Posix_CommConfig.c_cflag|=CREAD|CLOCAL;
@@ -576,6 +611,8 @@ bool Posix_QextBitBangPort::open(OpenMode mode)
             qDebug("Could not open File! Error code : %d", Posix_File->error());
         }
     }
+
+error_exit:
     UNLOCK_MUTEX();
     return isOpen();
 }
@@ -591,6 +628,7 @@ void Posix_QextBitBangPort::close()
 
     if (isOpen())
     {
+        ioctl(Posix_File->handle(), PPRELEASE);
         Posix_File->close();
         QIODevice::close();
     }
