@@ -178,9 +178,9 @@ b2:
     bra	    b2
     endm
     
-; Host need to wait until OutData go high
-; Host put data on InData, clock high, wait OutData to toggle, clock low
 DoReadHostByte macro
+    ; Ready to receive
+    ClrOutData
     ; Ready to receive
     DoReadHostBit 0
     DoReadHostBit 1
@@ -192,8 +192,6 @@ DoReadHostByte macro
     DoReadHostBit 7
     ; W reg = contents of RXDATA
     movf    RXDATA, W
-    ; Not ready to receive
-    ClrOutData
     endm
     
 DoWriteHostBit macro pos
@@ -208,8 +206,8 @@ b1:
     goto    BootloaderStart
     btfss   PORTA, INCLK
     bra	    b1
-    ; copy TXDATA bit to output data pin
-    btfsc   TXDATA, pos
+    ; copy WREG bit to output data pin
+    btfsc   WREG, pos
     goto    setbit
 clrbit:
     ClrOutData
@@ -349,7 +347,7 @@ BootloadMode:
     bcf	    TRISC, TRISC6	; set RC6 as output
     bcf	    PORTC, RC6		; set RC6=0
 
-    ; loopback test
+; bit loop back read RA0, write RC6
 #if (0)    
 LoopbackMode:
     btfss   PORTA, RA0
@@ -361,69 +359,45 @@ LoopbackMode_1:
     bra	    LoopbackMode
 #endif
         
-#if (1)
+; byte loop back, DoReadHostByte then DoWriteHostByte    
+#if (0)
 LoopbackMode:
     DoReadHostByte
     movf    RXDATA, W	; WREG = RXDATA
     movwf   TXDATA	; TXDATA = WREG
     DoWriteHostByte
     bra	    LoopbackMode
-#endif    
+#endif 
     
-     
+#if (1)
+; ***********************************************
+; Pre-setup, common to all commands.
+    clrf    CRCL
+    clrf    CRCH
+
+    movf    ADDRESS_L, W            ; Set all possible pointers
+    movwf   TBLPTRL
+#ifdef EEADR
+    movwf   EEADR
+#endif
+    movf    ADDRESS_H, W
+    movwf   TBLPTRH
+#ifdef EEADRH
+    movwf   EEADRH
+#endif
+    movff   ADDRESS_U, TBLPTRU
+    lfsr    FSR0, PACKET_DATA
+; ***********************************************
+    bra     BootloaderInfo      ; 6 00h
+#endif
+    
 #endif ; end BOOTLOADER_ADDRESS == 0 ******************************************
     lfsr    FSR2, 0             ; for compatibility with Extended Instructions mode.
-
-#ifdef USE_MAX_INTOSC
-    movlw   b'01110000'         ; set INTOSC to maximum speed (usually 8MHz)
-    iorwf   OSCCON, f
-#endif
-
+    
 #ifdef USE_PLL
-    #ifdef PLLEN
-        #ifdef OSCTUNE
-            bsf     OSCTUNE, PLLEN      ; enable PLL for faster internal clock
-        #else
-            ; 18F8680, 18F8585, 18F6680, and 18F6585 doesn't have OSCTUNE register.
-            ; Instead, PLLEN bit is in OSCCON.
-            bsf     OSCCON, PLLEN      ; enable PLL for faster internal clock
-        #endif
-    #else
-        #ifdef SPLLEN
-            bsf     OSCTUNE, SPLLEN     ; PIC18F14K50 has SPLLEN at bit 6
-        #endif
-    #endif
+    nop
 #endif
 
-#ifdef PPS_UTX_PIN
-    banksel PPSCON
-    ; unlock PPS registers
-    movlw   0x55
-    movwf   EECON2, ACCESS
-    movlw   0xAA
-    movwf   EECON2, ACCESS
-    bcf     PPSCON, IOLOCK, BANKED
-
-    ; assign UART RX/TX to PPS remappable pins
-    movlw   PPS_UTX
-    movwf   PPS_UTX_PIN, BANKED
-
-    movlw   PPS_URX_PIN
-    movwf   PPS_URX, BANKED
-
-    ; lock PPS registers from inadvertent changes
-    movlw   0x55
-    movwf   EECON2, ACCESS
-    movlw   0xAA
-    movwf   EECON2, ACCESS
-    bsf     PPSCON, IOLOCK, BANKED
-    movlb   0x0F
-#endif
-
-#ifdef PICDEM_LCD2
-    bsf     LATB, LATB0         ; PICDEM LCD 2 demoboard requires RB0 high to enable MAX3221 TX output to PC.
-    bcf     TRISB, TRISB0
-#endif
 ; *****************************************************************************
 ; WaitForHostCommand    
 DoAutoBaud:
@@ -509,8 +483,6 @@ VerifyPacketCrcLoop:
     movff   ADDRESS_U, TBLPTRU
     lfsr    FSR0, PACKET_DATA
 ; ***********************************************
-
- 
 
 ; ***********************************************
 ; Test the command field and sub-command.
@@ -1027,9 +999,6 @@ SendETX:
     bra     WaitForHostCommand
 ; *****************************************************************************
 
-
-
-
 ; *****************************************************************************
 ; Write a byte to the serial port while escaping control characters with a DLE
 ; first.
@@ -1048,15 +1017,22 @@ SendEscapeByte:
     bnz     WrNext          ; No, continue WrNext
 
 WrDLE:
-    movlw   DLE             ; Yes, send DLE first
-    rcall   SendHostByte
-
+    bra	    SendHostDLEByte ; Send DLE and TXDATA
+    
 WrNext:
     movf    TXDATA, W       ; Then send STX
 
 SendHostByte:
+    DoWriteHostByte	    ; Send to host
+    return
+
+SendHostDLEByte:
+    movlw   DLE
+    DoWriteHostByte
+    movf    TXDATA, W
     DoWriteHostByte
     return
+
 ; *****************************************************************************
 
 ; *****************************************************************************
