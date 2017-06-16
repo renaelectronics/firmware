@@ -60,7 +60,17 @@ int main(int argc, char *argv[])
     bool assertBreak = false;
 
     QString hexFile;
+
+#ifdef _TTY_POSIX_
+#ifdef USE_SERIAL
+    QString device = "/dev/ttyS0";
+#else
+    QString device = "/dev/parport0";
+#endif
+#else
     QString device = "COM1";
+#endif
+
     QString baudRate = "19200";
 
     QStringList args = a.arguments();
@@ -222,9 +232,20 @@ int main(int argc, char *argv[])
     {
         cout << "Usage:\n"
              << "   AN1310cl -d DEVICE [-b BAUDRATE] [-e] [-p] [-m] [-c] [-v] [-a] [-r] [filename.hex]\n\n"
-             << "Options:\n"
-             << "   -d DEVICE - Specifies which COM port to use (COM1 default)\n"
-             << "   -b BAUDRATE - Specify what baudrate to attempt to use (115200bps default)\n"
+             << "Options:\n";
+
+#ifdef _TTY_POSIX_
+#ifdef USE_SERIAL
+        cout  << "   -d DEVICE - Specifies which COM port to use (/dev/ttyS0 default)\n";
+#else
+        cout  << "   -d DEVICE - Specifies which parallel port to use (/dev/parport0 default)\n";
+#endif
+#else
+        cout  << "   -d DEVICE - Specifies which COM port to use (COM1 default)\n";
+#endif
+
+
+        cout << "   -b BAUDRATE - Specify what baudrate to attempt to use (115200bps default)\n"
              << "   -e - Erase device to a blank state\n"
              << "   -p - Write program FLASH memory using specified hex file contents\n"
              << "   -m - Write EEPROM memory using specified hex file contents\n"

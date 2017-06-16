@@ -14,8 +14,10 @@ SOURCES += main.cpp \
     Bootload.cpp
 unix {
     DEFINES += _TTY_POSIX_
-    LIBS += -L../build-QextSerialPort-Desktop_Qt_5_9_0_GCC_64bit-Debug
-    LIBS += -L../build-Bootload-Desktop_Qt_5_9_0_GCC_64bit-Debug
+    #LIBS += -L../build-QextSerialPort-Desktop_Qt_5_9_0_GCC_64bit-Debug
+    #LIBS += -L../build-Bootload-Desktop_Qt_5_9_0_GCC_64bit-Debug
+    LIBS += -L../build-QextSerialPort-Desktop_Qt_5_5_1_GCC_32bit-Debug
+    LIBS += -L../build-Bootload-Desktop_Qt_5_5_1_GCC_32bit-Debug
 }
 
 win32 { 

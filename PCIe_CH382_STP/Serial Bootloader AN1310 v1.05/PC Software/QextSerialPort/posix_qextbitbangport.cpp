@@ -4,6 +4,9 @@
 */
 
 #include <stdio.h>
+#include <sys/ioctl.h>
+#include <linux/parport.h>
+#include <linux/ppdev.h>
 #include "posix_qextbitbangport.h"
 
 /*!
@@ -530,6 +533,9 @@ The port is also configured to the current settings, as stored in the Settings s
 */
 bool Posix_QextBitBangPort::open(OpenMode mode)
 {
+    int ppmode;
+    int ppdir;
+
     LOCK_MUTEX();
     if (mode == QIODevice::NotOpen)
     {
@@ -547,8 +553,40 @@ bool Posix_QextBitBangPort::open(OpenMode mode)
             /*set open mode*/
             QIODevice::open(mode);
 
-            /*configure port settings*/
-            tcgetattr(Posix_File->handle(), &Posix_CommConfig);
+            /* configure port settings, claim the port, set mode, and pin direction */
+            if (ioctl(Posix_File->handle(), PPCLAIM, NULL))
+            {
+                 qDebug("Could not claim parallel port " + port.toLatin1());
+                 close();
+                 Posix_File->close();
+                 goto error_exit;
+            }
+
+            /* Set the Mode */
+            ppmode = IEEE1284_MODE_BYTE;
+            if (ioctl(Posix_File->handle(), PPSETMODE, &ppmode))
+            {
+                qDebug("Could not set mode");
+                ioctl(Posix_File->handle(), PPRELEASE);
+                close();
+                Posix_File->close();
+                goto error_exit;
+             }
+
+            /* Set data pins to output */
+            ppdir = 0x00;
+            if (ioctl(Posix_File->handle(), PPDATADIR, &ppdir))
+            {
+                qDebug("Could not set parallel port direction");
+                ioctl(Posix_File->handle(), PPRELEASE);
+                close();
+                Posix_File->close();
+                goto error_exit;
+ 
+            }
+
+            /* reset target device */
+            pulse_cs();
 
             /*set up other port settings*/
             Posix_CommConfig.c_cflag|=CREAD|CLOCAL;
@@ -576,6 +614,8 @@ bool Posix_QextBitBangPort::open(OpenMode mode)
             qDebug("Could not open File! Error code : %d", Posix_File->error());
         }
     }
+
+error_exit:
     UNLOCK_MUTEX();
     return isOpen();
 }
@@ -591,6 +631,7 @@ void Posix_QextBitBangPort::close()
 
     if (isOpen())
     {
+        ioctl(Posix_File->handle(), PPRELEASE);
         Posix_File->close();
         QIODevice::close();
     }
@@ -620,15 +661,15 @@ multithreading situations, use Posix_QextBitBangPort::bytesWaiting() instead.
 */
 qint64 Posix_QextBitBangPort::size() const
 {
-    int numBytes;
-    if (ioctl(Posix_File->handle(), FIONREAD, &numBytes)<0) {
-        numBytes=0;
-    }
-    return (qint64)numBytes;
+    char status;
+    ioctl(Posix_File->handle(), PPRSTATUS, &status);
+    if (status & PARPORT_STATUS_ACK)
+        return 1;
+    return 0;
 }
 
 /*!
-\fn qint64 Posix_QextBitBangPort::bytesAvailable()
+\fn qint64 Posix_QextBitBangPort::bytesAvailable() const
 Returns the number of bytes waiting in the port's receive queue.  This function will return 0 if
 the port is not currently open, or -1 on error.  Error information can be retrieved by calling
 Posix_QextBitBangPort::getLastError().
@@ -637,7 +678,7 @@ qint64 Posix_QextBitBangPort::bytesAvailable() const
 {
     qint64 result = 0;
     LOCK_MUTEX();
-    /* to do here */
+    result = size();
     UNLOCK_MUTEX();
     return result;
 }
@@ -681,7 +722,7 @@ void Posix_QextBitBangPort::translateError(ulong error)
 Sets TXD line to the requested state (break/constant logic low if parameter set is true).
 This function will have no effect if the port associated with the class is not currently open.
 */
-void Posix_QextBitBangPort::setBreak(bool set)
+void Posix_QextBitBangPort::setBreak(bool set __attribute__((unused)))
 {
     return;
 }
@@ -691,7 +732,7 @@ void Posix_QextBitBangPort::setBreak(bool set)
 Sets DTR line to the requested state (high by default).  This function will have no effect if
 the port associated with the class is not currently open.
 */
-void Posix_QextBitBangPort::setDtr(bool set)
+void Posix_QextBitBangPort::setDtr(bool set __attribute__((unused)))
 {
     return;
 }
@@ -701,7 +742,7 @@ void Posix_QextBitBangPort::setDtr(bool set)
 Sets RTS line to the requested state (high by default).  This function will have no effect if
 the port associated with the class is not currently open.
 */
-void Posix_QextBitBangPort::setRts(bool set)
+void Posix_QextBitBangPort::setRts(bool set __attribute__((unused)))
 {
     return;
 }
@@ -742,6 +783,49 @@ void Posix_QextBitBangPort::clearReceiveBuffer()
     return;
 }
 
+void Posix_QextBitBangPort::dprint(char data)
+{
+        int n;
+        for (n=7; n>=0; n--){
+                if (data & (1<<n))
+                        printf("%c", '1');
+                else
+                        printf("%c", '0');
+        }
+        printf("\n");
+}
+
+
+int Posix_QextBitBangPort::set_pin(int data, int pin)
+{
+
+    data = data | (1<<pin);
+    ioctl(Posix_File->handle(), PPWDATA, &data);
+    return data;
+
+}
+
+int Posix_QextBitBangPort::clr_pin(int data, int pin)
+{
+    data = data & ~(1<<pin);
+    ioctl(Posix_File->handle(), PPWDATA, &data);
+    return data;
+}
+
+void Posix_QextBitBangPort::pulse_cs()
+{
+    int data = 0;
+
+    data = clr_pin(data, CS);
+    usleep(1000);
+    
+    data = set_pin(data, CS);
+    usleep(1000);
+
+    data = clr_pin(data, CS);
+    usleep(1000);
+}
+
 /*!
 \fn qint64 Posix_QextBitBangPort::readData(char * data, qint64 maxSize)
 Reads a block of data from the serial port.  This function will read at most maxSize bytes from
@@ -753,7 +837,45 @@ is currently open (use isOpen() function to check if port is open).
 */
 qint64 Posix_QextBitBangPort::readData(char * data, qint64 maxSize)
 {
-    return maxSize;
+    int n;
+    char tmp = 0;
+
+    /* sanity check */
+    if (maxSize <= 0)
+	return 0;    
+
+    /* clear bitbang value */
+    tmp = 0;
+
+    /* check for input ready */
+    if (bytesAvailable() == 0)
+	return 0;
+
+    /* CLK = 0 */
+    tmp = clr_pin(tmp, CLK);
+    usleep(1000);
+
+    for (n=0; n<8; n++){
+
+            /* CLK = 1 */
+            tmp = set_pin(tmp, CLK);
+            usleep(1000);
+
+            /* INPIN = 1,0 */
+            if (size())
+                    *data = *data | (1<<n);
+            else
+                    *data = *data & ~(1<<n);
+             usleep(1000);
+
+             /* CLK = 0 */
+             tmp = clr_pin(tmp, CLK);
+             usleep(1000);
+
+    }
+    tmp = clr_pin(tmp, CLK);
+    usleep(1000);	
+    return 1;
 }
 
 /*!
@@ -767,11 +889,43 @@ is currently open (use isOpen() function to check if port is open).
 */
 qint64 Posix_QextBitBangPort::writeData(const char * data, qint64 maxSize)
 {
-    int retVal=0;
-    retVal = ::write(handle, data, maxSize);
-    if (retVal == -1)
-    {
-        lastErr = E_WRITE_FAILED;
+    int n;
+    int ctr;
+    char tmp;
+
+    /* clear bitbang value */
+    tmp = 0;
+    for (ctr=0; ctr<maxSize; ctr++){
+
+        if (size() != 0){
+            lastErr = E_WRITE_FAILED;
+            return -1;
+        }
+
+        /* write a byte */
+        for (n=0; n<8; n++){
+
+            /* CLK = 0 */
+            tmp = clr_pin(tmp, CLK);
+            usleep(1000);
+
+            /* OUTPIN = 1,0 */
+            if (*data & (1<<n))
+                tmp = set_pin(tmp, OUTPIN);
+            else
+                tmp = clr_pin(tmp, OUTPIN);
+            usleep(1000);
+
+            /* CLK = 1 */
+            tmp = set_pin(tmp, CLK);
+            usleep(1000);
+
+        }
+        tmp = clr_pin(tmp, CLK);
+        tmp = clr_pin(tmp, OUTPIN);
+        usleep(1000);
+        data++;
     }
-    return retVal;
+
+    return ctr;
 }
