@@ -166,21 +166,21 @@ DoReadHostBit macro pos
     bcf	    RXDATA, pos		; clear RXDATA bit 
 b1:    
     btfsc   PORTA, CS
-    goto    BootloaderStart
+    reset
     btfss   PORTA, INCLK	; wait clock go high
     bra	    b1
     btfsc   PORTA, INDATA	; if INDATA == 1 then set RXDATA
     bsf	    RXDATA, pos
 b2:    
     btfsc   PORTA, CS
-    goto    BootloaderStart
+    reset
     btfsc   PORTA, INCLK	; wait clock go low
     bra	    b2
     endm
     
+; Host need to wait until OutData go high
+; Host put data on InData, clock high, wait OutData to toggle, clock low
 DoReadHostByte macro
-    ; Ready to receive
-    ClrOutData
     ; Ready to receive
     DoReadHostBit 0
     DoReadHostBit 1
@@ -192,6 +192,8 @@ DoReadHostByte macro
     DoReadHostBit 7
     ; W reg = contents of RXDATA
     movf    RXDATA, W
+    ; Not ready to receive
+    ClrOutData
     endm
     
 DoWriteHostBit macro pos
@@ -203,7 +205,7 @@ DoWriteHostBit macro pos
     ; check CS and clock high
 b1:    
     btfsc   PORTA, CS
-    goto    BootloaderStart
+    reset
     btfss   PORTA, INCLK
     bra	    b1
     ; copy WREG bit to output data pin
@@ -219,7 +221,7 @@ donebit:
 b2:    
     ; check CS and clock low
     btfsc   PORTA, CS
-    goto    BootloaderStart
+    reset
     btfsc   PORTA, INCLK
     bra	    b2
     endm
@@ -347,7 +349,7 @@ BootloadMode:
     bcf	    TRISC, TRISC6	; set RC6 as output
     bcf	    PORTC, RC6		; set RC6=0
 
-; bit loop back read RA0, write RC6
+    ; loopback test
 #if (0)    
 LoopbackMode:
     btfss   PORTA, RA0
@@ -359,7 +361,6 @@ LoopbackMode_1:
     bra	    LoopbackMode
 #endif
         
-; byte loop back, DoReadHostByte then DoWriteHostByte    
 #if (0)
 LoopbackMode:
     DoReadHostByte
@@ -367,33 +368,15 @@ LoopbackMode:
     movwf   TXDATA	; TXDATA = WREG
     DoWriteHostByte
     bra	    LoopbackMode
-#endif 
-    
-#if (1)
-; ***********************************************
-; Pre-setup, common to all commands.
-    clrf    CRCL
-    clrf    CRCH
-
-    movf    ADDRESS_L, W            ; Set all possible pointers
-    movwf   TBLPTRL
-#ifdef EEADR
-    movwf   EEADR
-#endif
-    movf    ADDRESS_H, W
-    movwf   TBLPTRH
-#ifdef EEADRH
-    movwf   EEADRH
-#endif
-    movff   ADDRESS_U, TBLPTRU
-    lfsr    FSR0, PACKET_DATA
-; ***********************************************
-    bra     BootloaderInfo      ; 6 00h
-#endif
-    
+#endif    
+         
 #endif ; end BOOTLOADER_ADDRESS == 0 ******************************************
     lfsr    FSR2, 0             ; for compatibility with Extended Instructions mode.
-    
+
+#ifdef USE_MAX_INTOSC
+    nop
+#endif
+
 #ifdef USE_PLL
     nop
 #endif
@@ -483,6 +466,8 @@ VerifyPacketCrcLoop:
     movff   ADDRESS_U, TBLPTRU
     lfsr    FSR0, PACKET_DATA
 ; ***********************************************
+
+ 
 
 ; ***********************************************
 ; Test the command field and sub-command.
@@ -999,6 +984,9 @@ SendETX:
     bra     WaitForHostCommand
 ; *****************************************************************************
 
+
+
+
 ; *****************************************************************************
 ; Write a byte to the serial port while escaping control characters with a DLE
 ; first.
@@ -1017,22 +1005,22 @@ SendEscapeByte:
     bnz     WrNext          ; No, continue WrNext
 
 WrDLE:
-    bra	    SendHostDLEByte ; Send DLE and TXDATA
-    
+    movlw   DLE             ; Yes, send DLE first
+    bra	    SendHostDLEByte
+
 WrNext:
     movf    TXDATA, W       ; Then send STX
-
-SendHostByte:
-    DoWriteHostByte	    ; Send to host
-    return
-
+    bra	    SendHostByte
+    
 SendHostDLEByte:
-    movlw   DLE
     DoWriteHostByte
     movf    TXDATA, W
+    
+SendHostByte:
     DoWriteHostByte
     return
-
+    
+    
 ; *****************************************************************************
 
 ; *****************************************************************************
