@@ -21,15 +21,15 @@
 ; CONFIG4L
     config STVREN = OFF     ; Stack Full/Underflow Reset Enable bit (Stack full/underflow will not cause Reset)
     config LVP = OFF        ; Single-Supply ICSP Enable bit (Single-Supply ICSP disabled)
-    config BBSIZ = BB256    ; Boot Block Size Select bits ( 256 Word)
+    config BBSIZ = BB512    ; Boot Block Size Select bits
     config XINST = OFF      ; Extended Instruction Set Enable bit (Instruction set extension and Indexed Addressing mode disabled (Legacy mode))
 
 ; CONFIG5L
-    config CP0 = ON         ; Code Protection bit (Block 0 code-protected)
-    config CP1 = ON         ; Code Protection bit (Block 1 code-protected)
+    config CP0 = OFF        ; Code Protection bit 
+    config CP1 = OFF        ; Code Protection bit 
 
 ; CONFIG5H
-    config CPB = OFF        ; Boot Block Code Protection bitProtect Boot (Boot block not code-protected)
+    config CPB = OFF        ; Boot Block Code Protection bitProtect Boot 
     config CPD = OFF        ; Data EEPROM Code Protection bit (Data EEPROM not code-protected)
 
 ; CONFIG6L
@@ -38,7 +38,7 @@
 
 ; CONFIG6H
     config WRTC = OFF       ; Configuration Register Write Protection bit (Configuration registers (300000-3000FFh) not write-protected)
-    config WRTB = OFF       ; Boot Block Write Protection bit (Boot block not write-protected)
+    config WRTB = ON        ; Boot Block Write Protection bit (Boot block not write-protected)
     config WRTD = OFF       ; Data EEPROM Write Protection bit (Data EEPROM not write-protected)
 
 ; CONFIG7L

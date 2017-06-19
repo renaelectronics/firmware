@@ -1,5 +1,5 @@
 MPLINK 5.08, LINKER
-Linker Map File - Created Mon Jun 12 21:40:03 2017
+Linker Map File - Created Sun Jun 18 21:09:25 2017
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -7,7 +7,7 @@ Linker Map File - Created Mon Jun 12 21:40:03 2017
                    .org_0       code   0x000000    program   0x000000
                    .org_1       code   0x000000    program   0x000004
                    .org_2       code   0x000008    program   0x00000e
-                   .org_3       code   0x000018    program   0x00069e
+                   .org_3       code   0x000018    program   0x000320
 .config_300001_PIC18 BOOTLOADER.O    romdata   0x300001    program   0x000001
 .config_300002_PIC18 BOOTLOADER.O    romdata   0x300002    program   0x000001
 .config_300003_PIC18 BOOTLOADER.O    romdata   0x300003    program   0x000001
@@ -27,182 +27,80 @@ Linker Map File - Created Mon Jun 12 21:40:03 2017
                            ---------   ---------      
                             0x000000    0x000003      
                             0x000008    0x000015      
-                            0x000018    0x0006b5      
+                            0x000018    0x000337      
                             0x300001    0x300003      
                             0x300005    0x300006      
                             0x300008    0x30000d      
-            1723 out of 8472 program addresses used, program memory utilization is 20%
+            829 out of 8472 program addresses used, program memory utilization is 9%
 
 
 
                               Symbols - Sorted by Name
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
-                   AddCrc   0x0002ee    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-         AppendDataBuffer   0x00027a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-            BootInfoBlock   0x000310    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-         BootInfoBlockEnd   0x00031a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                   AddCrc   0x0000de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+         AppendDataBuffer   0x00006a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+            BootInfoBlock   0x000100    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+         BootInfoBlockEnd   0x00010a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
              BootloadMode   0x00002e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
      BootloaderBreakCheck   0x00000c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           BootloaderInfo   0x00031a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           BootloaderInfo   0x00010a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
           BootloaderStart   0x000000    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
            CheckAppVector   0x00000e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
           CheckAppVector2   0x00001c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             CheckCommand   0x0002be    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               DoAutoBaud   0x000258    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-         EraseAddressOkay   0x0003ae    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
- EraseEndFlashAddressOkay   0x000386    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               EraseFlash   0x000370    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+             CheckCommand   0x0000ae    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               DoAutoBaud   0x000048    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+            DoReadHostBit   0x00028e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           DoReadHostByte   0x0002aa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           DoWriteHostBit   0x0002d2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          DoWriteHostByte   0x0002f0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+         EraseAddressOkay   0x00019e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+ EraseEndFlashAddressOkay   0x000176    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               EraseFlash   0x000160    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
             GotoAppVector   0x000024    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
 HighPriorityInterruptVector   0x000008    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          JUMPTABLE_BEGIN   0x0002c4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-     LoadHoldingRegisters   0x00040e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             LoopbackMode   0x000040    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          JUMPTABLE_BEGIN   0x0000b4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+     LoadHoldingRegisters   0x0001fe    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
 LowPriorityInterruptVector   0x000018    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           NextEraseBlock   0x0003b4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    NoETX   0x000272    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    NoSTX   0x00026c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               ReadEeprom   0x000426    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           ReadEepromLoop   0x000428    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                ReadFlash   0x00032c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             ReadHostByte   0x0005c6    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          ReceiveDataLoop   0x000266    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          SendAcknowledge   0x000462    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             SendChecksum   0x00046a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                  SendETX   0x000472    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           SendEscapeByte   0x000478    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             SendHostByte   0x000490    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              StartOfLine   0x00025e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               StartWrite   0x0006a8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           TableWriteWREG   0x0006a4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              VerifyFlash   0x000342    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          VerifyPacketCRC   0x000280    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-      VerifyPacketCrcLoop   0x00028c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-       WaitForHostCommand   0x000258    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              WaitForRise   0x0002de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          WaitForRiseLoop   0x0002e0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    WrDLE   0x00048a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                   WrNext   0x00048e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-         WriteAddressOkay   0x00040a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              WriteConfig   0x00044e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          WriteConfigLoop   0x000454    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              WriteEeprom   0x000438    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          WriteEepromLoop   0x00043c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
- WriteEndFlashAddressOkay   0x0003e2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               WriteFlash   0x0003cc    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     WtSR   0x0002e8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _13b1   0x00011a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _13b2   0x000136    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _13clrbit   0x00012a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _13donebit   0x000136    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _13setbit   0x000130    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _16b1   0x000140    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _16b2   0x00015c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _16clrbit   0x000150    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _16donebit   0x00015c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _16setbit   0x000156    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _19b1   0x000166    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _19b2   0x000182    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _19clrbit   0x000176    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _19donebit   0x000182    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _19setbit   0x00017c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _22b1   0x00018c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _22b2   0x0001a8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _22clrbit   0x00019c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _22donebit   0x0001a8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _22setbit   0x0001a2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _25b1   0x0001b2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _25b2   0x0001ce    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _25clrbit   0x0001c2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _25donebit   0x0001ce    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _25setbit   0x0001c8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _28b1   0x0001d8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _28b2   0x0001f4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _28clrbit   0x0001e8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _28donebit   0x0001f4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _28setbit   0x0001ee    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _2b1   0x000042    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _2b2   0x000050    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _31b1   0x0001fe    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _31b2   0x00021a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _31clrbit   0x00020e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _31donebit   0x00021a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _31setbit   0x000214    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _34b1   0x000224    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _34b2   0x000240    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _34clrbit   0x000234    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _34donebit   0x000240    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _34setbit   0x00023a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _3b1   0x00005c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _3b2   0x00006a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _41b1   0x000492    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _41b2   0x0004ae    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _41clrbit   0x0004a2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _41donebit   0x0004ae    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _41setbit   0x0004a8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _44b1   0x0004b8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _44b2   0x0004d4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _44clrbit   0x0004c8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _44donebit   0x0004d4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _44setbit   0x0004ce    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _47b1   0x0004de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _47b2   0x0004fa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _47clrbit   0x0004ee    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _47donebit   0x0004fa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _47setbit   0x0004f4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _4b1   0x000076    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _4b2   0x000084    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _50b1   0x000504    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _50b2   0x000520    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _50clrbit   0x000514    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _50donebit   0x000520    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _50setbit   0x00051a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _53b1   0x00052a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _53b2   0x000546    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _53clrbit   0x00053a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _53donebit   0x000546    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _53setbit   0x000540    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _56b1   0x000550    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _56b2   0x00056c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _56clrbit   0x000560    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _56donebit   0x00056c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _56setbit   0x000566    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _59b1   0x000576    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _59b2   0x000592    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _59clrbit   0x000586    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _59donebit   0x000592    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _59setbit   0x00058c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _5b1   0x000090    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _5b2   0x00009e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _62b1   0x00059c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _62b2   0x0005b8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _62clrbit   0x0005ac    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _62donebit   0x0005b8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _62setbit   0x0005b2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _67b1   0x0005c8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _67b2   0x0005d6    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _68b1   0x0005e2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _68b2   0x0005f0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _69b1   0x0005fc    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _69b2   0x00060a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _6b1   0x0000aa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _6b2   0x0000b8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _70b1   0x000616    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _70b2   0x000624    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _71b1   0x000630    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _71b2   0x00063e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _72b1   0x00064a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _72b2   0x000658    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _73b1   0x000664    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _73b2   0x000672    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _74b1   0x00067e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _74b2   0x00068c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _7b1   0x0000c4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _7b2   0x0000d2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _8b1   0x0000de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _8b2   0x0000ec    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _9b1   0x0000f8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _9b2   0x000106    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           NextEraseBlock   0x0001a4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                    NoETX   0x000062    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                    NoSTX   0x00005c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               ReadEeprom   0x000216    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           ReadEepromLoop   0x000218    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                ReadFlash   0x00011c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+             ReadHostByte   0x000318    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          ReceiveDataLoop   0x000056    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          SendAcknowledge   0x000252    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+             SendChecksum   0x00025a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                  SendETX   0x000262    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           SendEscapeByte   0x000268    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+             SendHostByte   0x000288    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          SendHostDLEByte   0x000282    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              StartOfLine   0x00004e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               StartWrite   0x00032a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           TableWriteWREG   0x000326    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              VerifyFlash   0x000132    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          VerifyPacketCRC   0x000070    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+      VerifyPacketCrcLoop   0x00007c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+       WaitForHostCommand   0x000048    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              WaitForRise   0x0000ce    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          WaitForRiseLoop   0x0000d0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                    WrDLE   0x00027a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                   WrNext   0x00027e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+         WriteAddressOkay   0x0001fa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              WriteConfig   0x00023e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          WriteConfigLoop   0x000244    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              WriteEeprom   0x000228    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          WriteEepromLoop   0x00022c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+ WriteEndFlashAddressOkay   0x0001d2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               WriteFlash   0x0001bc    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                     WtSR   0x0000d8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                       a1   0x000290    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                       a2   0x0002a0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                       b1   0x0002d2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                       b2   0x0002e6    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                   clrbit   0x0002de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                   setbit   0x0002e4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
 
 
 
@@ -217,162 +115,60 @@ LowPriorityInterruptVector   0x000018    program     static C:\Users\ThomasTai\D
           CheckAppVector2   0x00001c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
             GotoAppVector   0x000024    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
              BootloadMode   0x00002e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             LoopbackMode   0x000040    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _2b1   0x000042    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _2b2   0x000050    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _3b1   0x00005c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _3b2   0x00006a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _4b1   0x000076    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _4b2   0x000084    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _5b1   0x000090    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _5b2   0x00009e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _6b1   0x0000aa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _6b2   0x0000b8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _7b1   0x0000c4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _7b2   0x0000d2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _8b1   0x0000de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _8b2   0x0000ec    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _9b1   0x0000f8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     _9b2   0x000106    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _13b1   0x00011a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _13clrbit   0x00012a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _13setbit   0x000130    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _13donebit   0x000136    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _13b2   0x000136    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _16b1   0x000140    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _16clrbit   0x000150    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _16setbit   0x000156    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _16b2   0x00015c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _16donebit   0x00015c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _19b1   0x000166    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _19clrbit   0x000176    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _19setbit   0x00017c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _19donebit   0x000182    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _19b2   0x000182    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _22b1   0x00018c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _22clrbit   0x00019c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _22setbit   0x0001a2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _22b2   0x0001a8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _22donebit   0x0001a8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _25b1   0x0001b2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _25clrbit   0x0001c2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _25setbit   0x0001c8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _25b2   0x0001ce    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _25donebit   0x0001ce    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _28b1   0x0001d8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _28clrbit   0x0001e8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _28setbit   0x0001ee    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _28b2   0x0001f4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _28donebit   0x0001f4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _31b1   0x0001fe    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _31clrbit   0x00020e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _31setbit   0x000214    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _31donebit   0x00021a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _31b2   0x00021a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _34b1   0x000224    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _34clrbit   0x000234    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _34setbit   0x00023a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _34donebit   0x000240    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _34b2   0x000240    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-       WaitForHostCommand   0x000258    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               DoAutoBaud   0x000258    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              StartOfLine   0x00025e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          ReceiveDataLoop   0x000266    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    NoSTX   0x00026c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    NoETX   0x000272    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-         AppendDataBuffer   0x00027a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          VerifyPacketCRC   0x000280    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-      VerifyPacketCrcLoop   0x00028c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             CheckCommand   0x0002be    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          JUMPTABLE_BEGIN   0x0002c4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              WaitForRise   0x0002de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          WaitForRiseLoop   0x0002e0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                     WtSR   0x0002e8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                   AddCrc   0x0002ee    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-            BootInfoBlock   0x000310    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-         BootInfoBlockEnd   0x00031a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           BootloaderInfo   0x00031a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                ReadFlash   0x00032c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              VerifyFlash   0x000342    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               EraseFlash   0x000370    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
- EraseEndFlashAddressOkay   0x000386    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-         EraseAddressOkay   0x0003ae    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           NextEraseBlock   0x0003b4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               WriteFlash   0x0003cc    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
- WriteEndFlashAddressOkay   0x0003e2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-         WriteAddressOkay   0x00040a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-     LoadHoldingRegisters   0x00040e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               ReadEeprom   0x000426    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           ReadEepromLoop   0x000428    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              WriteEeprom   0x000438    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          WriteEepromLoop   0x00043c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-              WriteConfig   0x00044e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          WriteConfigLoop   0x000454    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-          SendAcknowledge   0x000462    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             SendChecksum   0x00046a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                  SendETX   0x000472    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           SendEscapeByte   0x000478    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    WrDLE   0x00048a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                   WrNext   0x00048e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             SendHostByte   0x000490    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _41b1   0x000492    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _41clrbit   0x0004a2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _41setbit   0x0004a8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _41donebit   0x0004ae    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _41b2   0x0004ae    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _44b1   0x0004b8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _44clrbit   0x0004c8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _44setbit   0x0004ce    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _44donebit   0x0004d4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _44b2   0x0004d4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _47b1   0x0004de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _47clrbit   0x0004ee    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _47setbit   0x0004f4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _47donebit   0x0004fa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _47b2   0x0004fa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _50b1   0x000504    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _50clrbit   0x000514    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _50setbit   0x00051a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _50b2   0x000520    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _50donebit   0x000520    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _53b1   0x00052a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _53clrbit   0x00053a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _53setbit   0x000540    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _53donebit   0x000546    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _53b2   0x000546    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _56b1   0x000550    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _56clrbit   0x000560    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _56setbit   0x000566    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _56donebit   0x00056c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _56b2   0x00056c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _59b1   0x000576    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _59clrbit   0x000586    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _59setbit   0x00058c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _59b2   0x000592    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _59donebit   0x000592    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _62b1   0x00059c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _62clrbit   0x0005ac    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                _62setbit   0x0005b2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               _62donebit   0x0005b8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _62b2   0x0005b8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-             ReadHostByte   0x0005c6    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _67b1   0x0005c8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _67b2   0x0005d6    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _68b1   0x0005e2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _68b2   0x0005f0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _69b1   0x0005fc    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _69b2   0x00060a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _70b1   0x000616    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _70b2   0x000624    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _71b1   0x000630    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _71b2   0x00063e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _72b1   0x00064a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _72b2   0x000658    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _73b1   0x000664    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _73b2   0x000672    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _74b1   0x00067e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-                    _74b2   0x00068c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-           TableWriteWREG   0x0006a4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
-               StartWrite   0x0006a8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+       WaitForHostCommand   0x000048    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               DoAutoBaud   0x000048    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              StartOfLine   0x00004e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          ReceiveDataLoop   0x000056    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                    NoSTX   0x00005c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                    NoETX   0x000062    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+         AppendDataBuffer   0x00006a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          VerifyPacketCRC   0x000070    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+      VerifyPacketCrcLoop   0x00007c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+             CheckCommand   0x0000ae    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          JUMPTABLE_BEGIN   0x0000b4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              WaitForRise   0x0000ce    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          WaitForRiseLoop   0x0000d0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                     WtSR   0x0000d8    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                   AddCrc   0x0000de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+            BootInfoBlock   0x000100    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+         BootInfoBlockEnd   0x00010a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           BootloaderInfo   0x00010a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                ReadFlash   0x00011c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              VerifyFlash   0x000132    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               EraseFlash   0x000160    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+ EraseEndFlashAddressOkay   0x000176    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+         EraseAddressOkay   0x00019e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           NextEraseBlock   0x0001a4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               WriteFlash   0x0001bc    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+ WriteEndFlashAddressOkay   0x0001d2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+         WriteAddressOkay   0x0001fa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+     LoadHoldingRegisters   0x0001fe    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               ReadEeprom   0x000216    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           ReadEepromLoop   0x000218    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              WriteEeprom   0x000228    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          WriteEepromLoop   0x00022c    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+              WriteConfig   0x00023e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          WriteConfigLoop   0x000244    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          SendAcknowledge   0x000252    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+             SendChecksum   0x00025a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                  SendETX   0x000262    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           SendEscapeByte   0x000268    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                    WrDLE   0x00027a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                   WrNext   0x00027e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          SendHostDLEByte   0x000282    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+             SendHostByte   0x000288    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+            DoReadHostBit   0x00028e    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                       a1   0x000290    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                       a2   0x0002a0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           DoReadHostByte   0x0002aa    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           DoWriteHostBit   0x0002d2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                       b1   0x0002d2    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                   clrbit   0x0002de    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                   setbit   0x0002e4    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+                       b2   0x0002e6    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+          DoWriteHostByte   0x0002f0    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+             ReadHostByte   0x000318    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+           TableWriteWREG   0x000326    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
+               StartWrite   0x00032a    program     static C:\Users\ThomasTai\Documents\Rena Software\firmware\PCIe_CH382_STP\Serial Bootloader AN1310 v1.05\PIC18 Bootloader\PIC18 Bootloader.asm
 
 
