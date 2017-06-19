@@ -125,6 +125,7 @@ CRCL                equ 0x00
 CRCH                equ 0x01
 RXDATA              equ 0x02
 TXDATA              equ 0x03
+TMP		    equ 0x04
 
 ; Framed Packet Format
 ; <STX>[<COMMAND><ADDRL><ADDRH><ADDRU><0x00><DATALEN><...DATA...>]<CRCL><CRCH><ETX>
@@ -158,92 +159,7 @@ SetOutData macro
 ToggleOutData macro
     btg	    PORTC, OUTDATA
     endm
-
-; Host must set the INDATA before rising INCLK    
-DoReadHostBit macro pos
-    local   b1
-    local   b2
-    bcf	    RXDATA, pos		; clear RXDATA bit 
-b1:    
-    btfsc   PORTA, CS
-    reset
-    btfss   PORTA, INCLK	; wait clock go high
-    bra	    b1
-    btfsc   PORTA, INDATA	; if INDATA == 1 then set RXDATA
-    bsf	    RXDATA, pos
-b2:    
-    btfsc   PORTA, CS
-    reset
-    btfsc   PORTA, INCLK	; wait clock go low
-    bra	    b2
-    endm
-    
-; Host need to wait until OutData go high
-; Host put data on InData, clock high, wait OutData to toggle, clock low
-DoReadHostByte macro
-    ; Ready to receive
-    DoReadHostBit 0
-    DoReadHostBit 1
-    DoReadHostBit 2
-    DoReadHostBit 3
-    DoReadHostBit 4
-    DoReadHostBit 5
-    DoReadHostBit 6
-    DoReadHostBit 7
-    ; W reg = contents of RXDATA
-    movf    RXDATA, W
-    ; Not ready to receive
-    ClrOutData
-    endm
-    
-DoWriteHostBit macro pos
-    local b1
-    local b2
-    local clrbit
-    local setbit
-    local donebit
-    ; check CS and clock high
-b1:    
-    btfsc   PORTA, CS
-    reset
-    btfss   PORTA, INCLK
-    bra	    b1
-    ; copy WREG bit to output data pin
-    btfsc   WREG, pos
-    goto    setbit
-clrbit:
-    ClrOutData
-    goto    donebit
-setbit:
-    SetOutData
-    goto    donebit
-donebit:
-b2:    
-    ; check CS and clock low
-    btfsc   PORTA, CS
-    reset
-    btfsc   PORTA, INCLK
-    bra	    b2
-    endm
- 
-; Host need to wait until OutData is high
-; Then set clock high, wait 1 ms, read OutData, clock low for 1 ms 
-DoWriteHostByte macro 
-    ; Tx data ready
-    SetOutData
-    ; Tx data
-    DoWriteHostBit(0)
-    DoWriteHostBit(1)
-    DoWriteHostBit(2)
-    DoWriteHostBit(3)
-    DoWriteHostBit(4)
-    DoWriteHostBit(5)
-    DoWriteHostBit(6)
-    DoWriteHostBit(7)
-    ; Tx data done
-    ClrOutData
-    endm
-    
+  
 #ifdef USE_SOFTBOOTWP
   #ifndef SOFTWP
     #define SOFTWP
@@ -363,10 +279,10 @@ LoopbackMode_1:
         
 #if (0)
 LoopbackMode:
-    DoReadHostByte
+    call    DoReadHostByte
     movf    RXDATA, W	; WREG = RXDATA
     movwf   TXDATA	; TXDATA = WREG
-    DoWriteHostByte
+    call    DoWriteHostByte
     bra	    LoopbackMode
 #endif    
          
@@ -984,9 +900,6 @@ SendETX:
     bra     WaitForHostCommand
 ; *****************************************************************************
 
-
-
-
 ; *****************************************************************************
 ; Write a byte to the serial port while escaping control characters with a DLE
 ; first.
@@ -1013,19 +926,97 @@ WrNext:
     bra	    SendHostByte
     
 SendHostDLEByte:
-    DoWriteHostByte
+    call    DoWriteHostByte
     movf    TXDATA, W
     
 SendHostByte:
-    DoWriteHostByte
+    call    DoWriteHostByte
+    return
+        
+; *****************************************************************************
+; Host must set the INDATA before rising INCLK    
+DoReadHostBit:
+    rrncf   RXDATA, 1		; RXDATA = RXDATA >> 1;
+a1:    
+    btfsc   PORTA, CS
+    reset
+    btfss   PORTA, INCLK	; wait clock go high
+    bra	    a1
+    btfss   PORTA, INDATA	; if INDATA == 1 then set RXDATA
+    goto    a2
+    bsf	    RXDATA, 7		; set RXDATA's bit 7 to 1
+a2:
+    btfsc   PORTA, CS
+    reset
+    btfsc   PORTA, INCLK	; wait clock go low
+    bra	    a2
     return
     
-    
+; Host need to wait until OutData go high
+; Host put data on InData, clock high, wait OutData to toggle, clock low
+DoReadHostByte:
+    clrf    RXDATA
+    ; Ready to receive
+    call DoReadHostBit ; bit 0
+    call DoReadHostBit ; bit 1
+    call DoReadHostBit ; bit 2
+    call DoReadHostBit ; bit 3
+    call DoReadHostBit ; bit 4
+    call DoReadHostBit ; bit 5
+    call DoReadHostBit ; bit 6
+    call DoReadHostBit ; bit 7
+    ; W reg = contents of RXDATA
+    movf    RXDATA, W
+    ; Not ready to receive
+    ClrOutData
+    return
+
 ; *****************************************************************************
+DoWriteHostBit:
+    ; check CS and clock high
+b1:    
+    btfsc   PORTA, CS
+    reset
+    btfss   PORTA, INCLK
+    bra	    b1
+    ; shift right TMP thru carry
+    rrcf    TMP, 1
+    bc	    setbit
+clrbit:
+    ClrOutData
+    goto    b2
+setbit:
+    SetOutData
+b2:    
+    ; check CS and clock low
+    btfsc   PORTA, CS
+    reset
+    btfsc   PORTA, INCLK
+    bra	    b2
+    return
+ 
+; Host need to wait until OutData is high
+; Then set clock high, wait 1 ms, read OutData, clock low for 1 ms 
+DoWriteHostByte:
+    ; Tx data ready
+    SetOutData
+    ; Tx data
+    movwf   TMP	; TMP = WREG
+    call    DoWriteHostBit ; bit 0
+    call    DoWriteHostBit ; bit 1
+    call    DoWriteHostBit ; bit 2
+    call    DoWriteHostBit ; bit 3
+    call    DoWriteHostBit ; bit 4
+    call    DoWriteHostBit ; bit 5
+    call    DoWriteHostBit ; bit 6
+    call    DoWriteHostBit ; bit 7
+    ; Tx data done
+    ClrOutData
+    return
 
 ; *****************************************************************************
 ReadHostByte:
-    DoReadHostByte
+    call    DoReadHostByte
     return
 ; *****************************************************************************
 
