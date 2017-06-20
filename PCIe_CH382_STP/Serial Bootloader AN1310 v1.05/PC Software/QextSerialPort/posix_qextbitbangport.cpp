@@ -535,6 +535,7 @@ bool Posix_QextBitBangPort::open(OpenMode mode)
 {
     int ppmode;
     int ppdir;
+    char testdata[64];
 
     LOCK_MUTEX();
     if (mode == QIODevice::NotOpen)
@@ -587,6 +588,18 @@ bool Posix_QextBitBangPort::open(OpenMode mode)
 
             /* reset target device */
             pulse_cs();
+
+#if (0)
+            testdata[0] = 0x0f;
+            writeData(testdata, 1);
+            readData(testdata, 1);
+
+	    ioctl(Posix_File->handle(), PPRELEASE);
+            close();
+            Posix_File->close();
+            goto error_exit;
+#endif
+
 
             /*set up other port settings*/
             Posix_CommConfig.c_cflag|=CREAD|CLOCAL;
@@ -817,13 +830,13 @@ void Posix_QextBitBangPort::pulse_cs()
     int data = 0;
 
     data = clr_pin(data, CS);
-    usleep(1000);
+    usleep(8000);
     
     data = set_pin(data, CS);
-    usleep(1000);
+    usleep(8000);
 
     data = clr_pin(data, CS);
-    usleep(1000);
+    usleep(10000);
 }
 
 /*!
@@ -837,44 +850,56 @@ is currently open (use isOpen() function to check if port is open).
 */
 qint64 Posix_QextBitBangPort::readData(char * data, qint64 maxSize)
 {
+    if (!read_queue.isEmpty()){
+	*data = read_queue.dequeue();
+        return 1;
+    }
+    return readRawData(data, maxSize);
+}
+
+qint64 Posix_QextBitBangPort::readRawData(char * data, qint64 maxSize)
+{
     int n;
     char tmp = 0;
 
     /* sanity check */
     if (maxSize <= 0)
-	return 0;    
+	return -1;    
 
     /* clear bitbang value */
     tmp = 0;
 
     /* check for input ready */
-    if (bytesAvailable() == 0)
-	return 0;
+    if (bytesAvailable() == 0){
+        qDebug("WARNING: target not ready to send data.\n");
+	return -1;
+    }
 
     /* CLK = 0 */
     tmp = clr_pin(tmp, CLK);
-    usleep(1000);
+    usleep(8000);
 
     for (n=0; n<8; n++){
 
             /* CLK = 1 */
             tmp = set_pin(tmp, CLK);
-            usleep(1000);
+            usleep(8000);
 
             /* INPIN = 1,0 */
             if (size())
                     *data = *data | (1<<n);
             else
                     *data = *data & ~(1<<n);
-             usleep(1000);
+             usleep(8000);
 
              /* CLK = 0 */
              tmp = clr_pin(tmp, CLK);
-             usleep(1000);
+             usleep(8000);
 
     }
     tmp = clr_pin(tmp, CLK);
-    usleep(1000);	
+    usleep(8000);
+
     return 1;
 }
 
@@ -892,6 +917,12 @@ qint64 Posix_QextBitBangPort::writeData(const char * data, qint64 maxSize)
     int n;
     int ctr;
     char tmp;
+    char read_data;
+
+    while (size() != 0){
+	readRawData(&read_data, 1);
+	read_queue.enqueue(read_data);
+    }
 
     /* clear bitbang value */
     tmp = 0;
@@ -899,6 +930,7 @@ qint64 Posix_QextBitBangPort::writeData(const char * data, qint64 maxSize)
 
         if (size() != 0){
             lastErr = E_WRITE_FAILED;
+            qDebug("### WARNING : Target not ready to receive data.\n");
             return -1;
         }
 
@@ -907,23 +939,23 @@ qint64 Posix_QextBitBangPort::writeData(const char * data, qint64 maxSize)
 
             /* CLK = 0 */
             tmp = clr_pin(tmp, CLK);
-            usleep(1000);
+            usleep(8000);
 
             /* OUTPIN = 1,0 */
             if (*data & (1<<n))
                 tmp = set_pin(tmp, OUTPIN);
             else
                 tmp = clr_pin(tmp, OUTPIN);
-            usleep(1000);
+            usleep(8000);
 
             /* CLK = 1 */
             tmp = set_pin(tmp, CLK);
-            usleep(1000);
+            usleep(8000);
 
         }
         tmp = clr_pin(tmp, CLK);
         tmp = clr_pin(tmp, OUTPIN);
-        usleep(1000);
+        usleep(8000);
         data++;
     }
 

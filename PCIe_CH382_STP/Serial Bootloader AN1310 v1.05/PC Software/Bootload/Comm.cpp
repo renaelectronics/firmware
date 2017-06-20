@@ -551,7 +551,7 @@ Comm::ErrorCode Comm::SendGetPacket(const QByteArray& sendPacket, QByteArray& re
         QCoreApplication::processEvents();
     }
 
-    //qWarning("Received STX, sending packet. %fs", (double)elapsed.elapsed() / 1000);
+    qWarning("Received STX, sending packet. %fs", (double)elapsed.elapsed() / 1000);
 
     // now we are free to send the rest of the packet
     while(retryLimit-- >= 0)

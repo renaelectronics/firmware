@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QWaitCondition>
+#include <QQueue>
 
 #include <stdio.h>
 #include <termios.h>
@@ -35,12 +36,14 @@ class Posix_QextBitBangPort : public QextSerialBase
 protected:
     QFile* Posix_File;
     int handle;
+    QQueue<char> read_queue;
 
     struct termios Posix_CommConfig;
     struct timeval Posix_Timeout;
     struct timeval Posix_Copy_Timeout;
 
     virtual qint64 readData(char * data, qint64 maxSize);
+    virtual qint64 readRawData(char * data, qint64 maxSize);
     virtual qint64 writeData(const char * data, qint64 maxSize);
 
 public:
