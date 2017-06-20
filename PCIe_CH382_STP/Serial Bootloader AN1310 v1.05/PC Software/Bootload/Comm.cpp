@@ -553,7 +553,6 @@ Comm::ErrorCode Comm::SendGetPacket(const QByteArray& sendPacket, QByteArray& re
 
     qWarning("Received STX, sending packet. %fs", (double)elapsed.elapsed() / 1000);
 
-    qDebug("### bytesAvailable = %d\n", serial->bytesAvailable());
     // now we are free to send the rest of the packet
     while(retryLimit-- >= 0)
     {
@@ -720,7 +719,6 @@ Comm::DeviceId Comm::ReadDeviceID(Device::Families deviceFamily)
 
     ReadFlashPacket cmd;
 
-    qDebug("### ReadDeviceID ###\n");
     switch(deviceFamily)
     {
         case Device::PIC32:
@@ -757,7 +755,6 @@ Comm::DeviceId Comm::ReadDeviceID(Device::Families deviceFamily)
 
         case Device::PIC18:
         default:
-            qDebug("### PIC 18 ###\n");
             cmd.setAddress(0x3FFFFE);
             cmd.setBytes(2);
             cmd.FramePacket(sendPacket);
