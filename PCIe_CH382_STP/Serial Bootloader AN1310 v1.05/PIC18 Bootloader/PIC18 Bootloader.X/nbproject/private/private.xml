@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/ThomasTai/Documents/Rena%20Software/firmware/PCIe_CH382_STP/Serial%20Bootloader%20AN1310%20v1.05/PIC18%20Bootloader/bootconfig.inc</file>
             <file>file:/C:/Users/ThomasTai/Documents/Rena%20Software/firmware/PCIe_CH382_STP/Serial%20Bootloader%20AN1310%20v1.05/PIC18%20Bootloader/preprocess.inc</file>
             <file>file:/C:/Users/ThomasTai/Documents/Rena%20Software/firmware/PCIe_CH382_STP/Serial%20Bootloader%20AN1310%20v1.05/PIC18%20Bootloader/PIC18%20Bootloader.asm</file>
             <file>file:/C:/Users/ThomasTai/Documents/Rena%20Software/firmware/PCIe_CH382_STP/Serial%20Bootloader%20AN1310%20v1.05/PIC18%20Bootloader/configure.inc</file>
+            <file>file:/C:/Users/ThomasTai/Documents/Rena%20Software/firmware/PCIe_CH382_STP/Serial%20Bootloader%20AN1310%20v1.05/PIC18%20Bootloader/devices.inc</file>
         </group>
     </open-files>
 </project-private>

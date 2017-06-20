@@ -292,9 +292,15 @@ LoopbackMode:
 #ifdef USE_MAX_INTOSC
     nop
 #endif
-
+    
 #ifdef USE_PLL
-    nop
+    ; run internal OSC at 8Mhz,  OSCCON = 0x70
+    movlw   0x72
+    movwf   OSCCON
+
+    ; enable PLL, OSCTUNE = 0xC0
+    movlw   0xC0
+    movwf   OSCTUNE
 #endif
 
 ; *****************************************************************************

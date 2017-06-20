@@ -136,7 +136,7 @@
 ; If you see the bootloader is reserving more FLASH memory than it really needs (you'll
 ; see a bunch of FFFF/NOP instructions at the end of the bootloader memory region),
 ; you can try reducing BOOTLOADERSIZE.
-#define BOOTLOADERSIZE  .708
+#define BOOTLOADERSIZE  .1024
 
 #define MAJOR_VERSION   .1              ; Bootloader Firmware Version
 #define MINOR_VERSION   .5
