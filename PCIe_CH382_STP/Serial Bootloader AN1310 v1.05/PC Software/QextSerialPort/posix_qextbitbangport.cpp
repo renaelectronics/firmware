@@ -225,7 +225,6 @@ void Posix_QextBitBangPort::setBaudRate(unsigned int baudRate)
     }
     width_us = (1.0 / Settings.BaudRate) * 1000000;
     pulse_width_us = (int)width_us;
-    qDebug("#### pulse_width_us = %d\n", pulse_width_us);
     UNLOCK_MUTEX();
 }
 

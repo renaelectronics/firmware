@@ -234,7 +234,11 @@ void MainWindow::Disconnect(void)
         comm->close();
 
         deviceLabel.setText("Disconnected");
+#ifdef USE_SERIAL
         statusBar()->showMessage("Released serial port.");
+#else
+        statusBar()->showMessage("Released port.");
+#endif
     }
     else
     {
