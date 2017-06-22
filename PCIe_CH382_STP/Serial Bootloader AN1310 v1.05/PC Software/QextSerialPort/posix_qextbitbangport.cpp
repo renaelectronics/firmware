@@ -193,6 +193,7 @@ BAUD1800.
 */
 void Posix_QextBitBangPort::setBaudRate(unsigned int baudRate)
 {
+    double width_us;
     LOCK_MUTEX();
     if (Settings.BaudRate != baudRate) {
         switch (baudRate) {
@@ -222,6 +223,9 @@ void Posix_QextBitBangPort::setBaudRate(unsigned int baudRate)
                 break;
         }
     }
+    width_us = (1.0 / Settings.BaudRate) * 1000000;
+    pulse_width_us = (int)width_us;
+    qDebug("#### pulse_width_us = %d\n", pulse_width_us);
     UNLOCK_MUTEX();
 }
 
@@ -535,7 +539,6 @@ bool Posix_QextBitBangPort::open(OpenMode mode)
 {
     int ppmode;
     int ppdir;
-    char testdata[64];
 
     LOCK_MUTEX();
     if (mode == QIODevice::NotOpen)
@@ -589,17 +592,20 @@ bool Posix_QextBitBangPort::open(OpenMode mode)
             /* reset target device */
             pulse_cs();
 
-#if (0)
-            testdata[0] = 0x0f;
-            writeData(testdata, 1);
-            readData(testdata, 1);
+#if (0)/* loop back test */
+            do{
+                /* loop back test */ 
+                char testdata[64];
+                testdata[0] = 0x0f;
+                writeData(testdata, 1);
+                readData(testdata, 1);
 
-	    ioctl(Posix_File->handle(), PPRELEASE);
-            close();
-            Posix_File->close();
+                ioctl(Posix_File->handle(), PPRELEASE);
+                close();
+                Posix_File->close();
+            } while (0);
             goto error_exit;
 #endif
-
 
             /*set up other port settings*/
             Posix_CommConfig.c_cflag|=CREAD|CLOCAL;
@@ -825,18 +831,24 @@ int Posix_QextBitBangPort::clr_pin(int data, int pin)
     return data;
 }
 
+void Posix_QextBitBangPort::wait_pulse_width(void)
+{
+    usleep(pulse_width_us);
+}
+
 void Posix_QextBitBangPort::pulse_cs()
 {
     int data = 0;
+    int _10ms = 10000;
 
     data = clr_pin(data, CS);
-    usleep(8000);
+    usleep(_10ms);
     
     data = set_pin(data, CS);
-    usleep(8000);
+    usleep(_10ms);
 
     data = clr_pin(data, CS);
-    usleep(10000);
+    usleep(_10ms);
 }
 
 /*!
@@ -877,28 +889,28 @@ qint64 Posix_QextBitBangPort::readRawData(char * data, qint64 maxSize)
 
     /* CLK = 0 */
     tmp = clr_pin(tmp, CLK);
-    usleep(8000);
+    wait_pulse_width();
 
     for (n=0; n<8; n++){
 
             /* CLK = 1 */
             tmp = set_pin(tmp, CLK);
-            usleep(8000);
+            wait_pulse_width();
 
             /* INPIN = 1,0 */
             if (size())
                     *data = *data | (1<<n);
             else
                     *data = *data & ~(1<<n);
-             usleep(8000);
+             wait_pulse_width();
 
              /* CLK = 0 */
              tmp = clr_pin(tmp, CLK);
-             usleep(8000);
+             wait_pulse_width();
 
     }
     tmp = clr_pin(tmp, CLK);
-    usleep(8000);
+    wait_pulse_width();
 
     return 1;
 }
@@ -939,23 +951,23 @@ qint64 Posix_QextBitBangPort::writeData(const char * data, qint64 maxSize)
 
             /* CLK = 0 */
             tmp = clr_pin(tmp, CLK);
-            usleep(8000);
+            wait_pulse_width();
 
             /* OUTPIN = 1,0 */
             if (*data & (1<<n))
                 tmp = set_pin(tmp, OUTPIN);
             else
                 tmp = clr_pin(tmp, OUTPIN);
-            usleep(8000);
+            wait_pulse_width();
 
             /* CLK = 1 */
             tmp = set_pin(tmp, CLK);
-            usleep(8000);
+            wait_pulse_width();
 
         }
         tmp = clr_pin(tmp, CLK);
         tmp = clr_pin(tmp, OUTPIN);
-        usleep(8000);
+        wait_pulse_width();
         data++;
     }
 
