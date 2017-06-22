@@ -33,8 +33,11 @@
 #include <QKeyEvent>
 #include <QTime>
 #include <QFile>
-
+#ifdef USE_SERIAL
 #include "QextSerialPort/qextserialport.h"
+#else
+#include "QextSerialPort/qextbitbangport.h"
+#endif
 #include "QextSerialPort/qextserialbase.h"
 
 #include "QSerialTerminal.h"
@@ -62,7 +65,11 @@ QSerialTerminal::~QSerialTerminal()
     delete transmitThread;
 }
 
+#ifdef USE_SERIAL
 void QSerialTerminal::open(QextSerialPort* newSerialPort)
+#else
+void QSerialTerminal::open(QextBitBangPort* newSerialPort)
+#endif
 {
     if(serial != NULL)
     {
@@ -127,7 +134,11 @@ void QSerialTerminal::transmitFile(QString fileName)
     dirty = true;
 }
 
+#ifdef USE_SERIAL
 QextSerialPort* QSerialTerminal::serialPort(void)
+#else
+QextBitBangPort* QSerialTerminal::serialPort(void)
+#endif
 {
     return serial;
 }

@@ -31,7 +31,11 @@
 #include <QWidget>
 #include <QTime>
 #include <QBasicTimer>
+#ifdef USE_SERIAL
 #include "QextSerialPort/qextserialport.h"
+#else
+#include "QextSerialPort/qextbitbangport.h"
+#endif
 
 /*!
  * This thread provides non-blocking serial transmit capability for the serial terminal GUI.
@@ -42,8 +46,11 @@ class TransmitThread : public QThread
 
 public:
     bool shutdown;
-
+#ifdef USE_SERIAL
     QextSerialPort* serial;
+#else
+    QextBitBangPort* serial;
+#endif
 
     TransmitThread();
 
@@ -68,11 +75,19 @@ public:
     QSerialTerminal(QWidget *parent = 0);
     ~QSerialTerminal();
 
+#ifdef USE_SERIAL
     void open(QextSerialPort* newSerialPort);
+#else
+    void open(QextBitBangPort* newSerialPort);
+#endif
     void close(void);
     void transmitFile(QString fileName);
 
+#ifdef USE_SERIAL
     QextSerialPort* serialPort(void);
+#else
+    QextBitBangPort* serialPort(void);
+#endif
     bool isConnected(void);
 
     unsigned int TotalRx, TotalTx;
@@ -86,7 +101,11 @@ public slots:
     void clear();
 
 protected:
+#ifdef USE_SERIAL
     QextSerialPort* serial;
+#else
+    QextBitBangPort* serial;
+#endif
     QTime lastReceive;
     TransmitThread* transmitThread;
     int originalTimeout;
