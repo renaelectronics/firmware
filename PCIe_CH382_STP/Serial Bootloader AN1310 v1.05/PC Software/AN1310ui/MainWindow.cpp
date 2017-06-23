@@ -102,7 +102,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     settings.beginGroup("Comm");
 #ifdef _TTY_POSIX_
+#ifdef USE_SERIAL
     comm->serial->setPortName(settings.value("portName", "/dev/serial").toString());
+#else
+    comm->serial->setPortName(settings.value("portName", "/dev/parport0").toString());
+#endif
 #else
     comm->serial->setPortName(settings.value("portName", "COM1").toString());
 #endif
@@ -230,7 +234,11 @@ void MainWindow::Disconnect(void)
         comm->close();
 
         deviceLabel.setText("Disconnected");
+#ifdef USE_SERIAL
         statusBar()->showMessage("Released serial port.");
+#else
+        statusBar()->showMessage("Released port.");
+#endif
     }
     else
     {

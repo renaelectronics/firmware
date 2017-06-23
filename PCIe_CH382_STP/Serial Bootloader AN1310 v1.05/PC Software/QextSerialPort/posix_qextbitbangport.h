@@ -37,6 +37,7 @@ protected:
     QFile* Posix_File;
     int handle;
     QQueue<char> read_queue;
+    int pulse_width_us;
 
     struct termios Posix_CommConfig;
     struct timeval Posix_Timeout;
@@ -84,6 +85,7 @@ public:
     int set_pin(int data, int pin);
     int clr_pin(int data, int pin);
     void pulse_cs(void);
+    void wait_pulse_width(void);
 
 };
 
