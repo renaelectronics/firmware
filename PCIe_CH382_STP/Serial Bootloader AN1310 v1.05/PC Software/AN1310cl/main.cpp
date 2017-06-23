@@ -40,6 +40,7 @@ using namespace std;
 
 void MessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 bool quiet = false;
+bool debugMsg = false;
 
 int main(int argc, char *argv[])
 {
@@ -265,7 +266,8 @@ void MessageOutput(QtMsgType type, const QMessageLogContext &context, const QStr
     QByteArray localMsg = msg.toLocal8Bit();
     switch (type) {
     case QtDebugMsg:
-        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+	if (debugMsg)
+	        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
     case QtInfoMsg:
         fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
