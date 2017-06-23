@@ -222,9 +222,15 @@ BootloaderStart:
 HighPriorityInterruptVector:
     goto    AppHighIntVector    ; Re-map Interrupt vector
 
+    ORG	    0x0018
+LowPriorityInterruptVector:
+    goto    AppLowIntVector     ; Re-map Interrupt vector
+
 BootloaderBreakCheck:
     ; TODO: check firmware switch and branch to BootloadMode
-    bra	    BootloadMode
+    bsf	    TRISC, TRISC1	; set RC1 as input
+    btfss   PORTC, RC1		; if RC==1 skip to CheckAppVector
+    bra	    BootloadMode	; bootloader mode
     
 CheckAppVector:
     ; Read instruction at the application reset vector location. 
@@ -234,11 +240,7 @@ CheckAppVector:
     movlw   high(AppVector)
     movwf   TBLPTRH
     bra     CheckAppVector2
-
-    ORG	    0x0018
-LowPriorityInterruptVector:
-    goto    AppLowIntVector     ; Re-map Interrupt vector
-
+   
 CheckAppVector2:
     movlw   upper(AppVector)
     movwf   TBLPTRU     
