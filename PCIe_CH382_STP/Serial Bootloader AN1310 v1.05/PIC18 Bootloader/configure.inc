@@ -37,7 +37,7 @@
     config WRT1 = OFF       ; Write Protection bit (Block 1 not write-protected)
 
 ; CONFIG6H
-    config WRTC = OFF       ; Configuration Register Write Protection bit (Configuration registers (300000-3000FFh) not write-protected)
+    config WRTC = ON        ; Configuration Register Write Protection bit (Configuration registers (300000-3000FFh) write-protected)
     config WRTB = ON        ; Boot Block Write Protection bit (Boot block not write-protected)
     config WRTD = OFF       ; Data EEPROM Write Protection bit (Data EEPROM not write-protected)
 

@@ -28,7 +28,7 @@
 #define USE_PLL                 ; Sets OSCTUNE.PLLEN bit at start up for frequency multiplication.
 ;#define PICDEM_LCD2             ; RB0 = 1 required to enable MAX3221 TX output on PICDEM LCD 2 demo board
 #define USE_SOFTBOOTWP          ; enable software boot block write protection
-;#define USE_SOFTCONFIGWP        ; enable software config words write protection
+#define USE_SOFTCONFIGWP        ; enable software config words write protection
 
 ; Autobaud will be used by default. To save code space or to force a specific baud rate to be used, 
 ; you can optionally define a BAUDRG value instead. Most PIC18's support BRG16 mode and use the 
