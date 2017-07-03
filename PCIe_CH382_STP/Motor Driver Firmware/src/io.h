@@ -33,16 +33,16 @@
 #define M2_DIR              PORTBbits.RB7 /* 0, output */
 
 /* PORT C */
-#define PORTC_TRISC         0x91 /* RC7,4,0 are input */
+#define PORTC_TRISC         0x93 /* RC7=FLAG_N, RC4=SDI, RC0=STROBE, RC1=FIRMWARE SW are input */
 #define PORTC_INIT_VALUE    0xFD /* RC1 = WCH382 PERST# = 0  */
-#define MX_ENABLE           PORTCbits.RC0 /* 1, input *//* aka strobe */
-#define PERST               PORTCbits.RC1 /* 0, output *//* to WCH382 PERST# */
-#define CS_N                PORTCbits.RC2 /* 0, output */
-#define SCK_RC3             PORTCbits.RC3 /* 0, output */
-#define SDI_RC4             PORTCbits.RC4 /* 1, input */
-#define SDO_RC5             PORTCbits.RC5 /* 0, output */
-#define TX_RC6              PORTCbits.RC6 /* 0, output */
-#define RX_RC7              PORTCbits.RC7 /* 1, input */
+#define MX_ENABLE           PORTCbits.RC0 /* 1, input  *//* aka strobe */
+#define FIRMWARE_SW         PORTCbits.RC1 /* 1, input  *//* firmware switch */
+#define CS_N                PORTCbits.RC2 /* 0, output *//* cs_n */
+#define SCK_RC3             PORTCbits.RC3 /* 0, output *//* sck */
+#define SDI_RC4             PORTCbits.RC4 /* 1, input  *//* sdi */
+#define SDO_RC5             PORTCbits.RC5 /* 0, output *//* sdo */
+#define LED_OUT             PORTCbits.RC6 /* 0, output *//* led */
+#define FLAG_N              PORTCbits.RC7 /* 1, input  *//* flag_n */
 
 #endif	/* IO_H */
 

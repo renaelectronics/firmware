@@ -1,6 +1,5 @@
 #include <p18cxxx.h>
 #include "interrupt.h"
-#include "serial.h"
 #include "eeprom.h"
 
 char read_eeprom_data(char addr) {

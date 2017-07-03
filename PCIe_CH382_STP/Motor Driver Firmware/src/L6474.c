@@ -5,7 +5,6 @@
 #include "spi.h"
 #include "io.h"
 #include "interrupt.h"
-#include "serial.h"
 #include "eeprom.h"
 #include "L6474.h"
 
@@ -289,52 +288,52 @@ void copy_from_eeprom(char unit) {
     offset = get_eeprom_offset(unit);
 
     /* EEPROM_ABS_POS */
-    param1 = read_eeprom_data(offset + EEPROM_ABS_POS);
-    param2 = read_eeprom_data(offset + EEPROM_ABS_POS + 1);
-    param3 = read_eeprom_data(offset + EEPROM_ABS_POS + 2);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_ABS_POS));
+    param2 = read_eeprom_data((unsigned char)(offset + EEPROM_ABS_POS + 1));
+    param3 = read_eeprom_data((unsigned char)(offset + EEPROM_ABS_POS + 2));
     set_abs_pos(unit);
 
     /* EEPROM_EL_POS */
-    param1 = read_eeprom_data(offset + EEPROM_EL_POS);
-    param2 = read_eeprom_data(offset + EEPROM_EL_POS + 1);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_EL_POS));
+    param2 = read_eeprom_data((unsigned char)(offset + EEPROM_EL_POS + 1));
     set_el_pos(unit);
 
     /* EEPROM_MARK */
-    param1 = read_eeprom_data(offset + EEPROM_MARK);
-    param2 = read_eeprom_data(offset + EEPROM_MARK + 1);
-    param3 = read_eeprom_data(offset + EEPROM_MARK + 2);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_MARK));
+    param2 = read_eeprom_data((unsigned char)(offset + EEPROM_MARK + 1));
+    param3 = read_eeprom_data((unsigned char)(offset + EEPROM_MARK + 2));
     set_mark(unit);
 
     /* EEPROM_TVAL */
-    param1 = read_eeprom_data(offset + EEPROM_TVAL);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_TVAL));
     set_tval(unit);
 
     /* EEPROM_T_FAST */
-    param1 = read_eeprom_data(offset + EEPROM_T_FAST);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_T_FAST));
     set_t_fast(unit);
 
     /* EEPROM_TON_MIN */
-    param1 = read_eeprom_data(offset + EEPROM_TON_MIN);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_TON_MIN));
     set_ton_min(unit);
 
     /* EEPROM_TOFF_MIN */
-    param1 = read_eeprom_data(offset + EEPROM_TOFF_MIN);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_TOFF_MIN));
     set_toff_min(unit);
 
     /* EEPROM_ADC_OUT */
-    param1 = read_eeprom_data(offset + EEPROM_ADC_OUT);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_ADC_OUT));
     set_adc_out(unit);
 
     /* EEPROM_OCD_TH */
-    param1 = read_eeprom_data(offset + EEPROM_OCD_TH);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_OCD_TH));
     set_ocd_th(unit);
 
     /* EEPROM_STEP_MODE */
-    param1 = read_eeprom_data(offset + EEPROM_STEP_MODE);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_STEP_MODE));
     set_step_mode(unit);
 
     /* EEPROM_ALARM_EN */
-    param1 = read_eeprom_data(offset + EEPROM_ALARM_EN);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_ALARM_EN));
     set_alarm_en(unit);
 
     /* reset motor position to 0 */
@@ -346,8 +345,8 @@ void copy_from_eeprom(char unit) {
     set_mark(unit);
 
     /* EEPROM_CONFIG */
-    param1 = read_eeprom_data(offset + EEPROM_CONFIG);
-    param2 = read_eeprom_data(offset + EEPROM_CONFIG + 1);
+    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_CONFIG));
+    param2 = read_eeprom_data((unsigned char)(offset + EEPROM_CONFIG + 1));
     set_config(unit);
 
 }
@@ -357,7 +356,7 @@ unsigned char blank_check(char unit) {
     offset = get_eeprom_offset(unit);
     /* blank check */
     for (n = 0; n < EEPROM_MAX_BYTE; n++) {
-        if (read_eeprom_data(offset + n) != 0xff) {
+        if (read_eeprom_data((unsigned char)(offset + n)) != 0xff) {
             return 0;
         }
     }
@@ -370,7 +369,7 @@ unsigned char chksum_check(char unit) {
     /* checksum */
     value = 0;
     for (n = 0; n < EEPROM_MAX_BYTE; n++) {
-        value += read_eeprom_data(offset + n);
+        value += read_eeprom_data((unsigned char)(offset + n));
     }
     if (value == 0) {
         return 1;

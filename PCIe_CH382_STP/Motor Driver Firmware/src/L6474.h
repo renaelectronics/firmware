@@ -35,7 +35,7 @@
 #define STEP_MODE           (0x16)
 #define ALARM_EN            (0x17)
 #define CONFIG              (0x18)
-#define STATUS              (0x19)
+#define CMD_STATUS          (0x19)
 
 /* EEPROM location */
 #define EEPROM_ABS_POS      (0)

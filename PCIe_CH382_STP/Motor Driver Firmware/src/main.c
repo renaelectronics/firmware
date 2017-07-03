@@ -25,8 +25,8 @@
 #include "io.h"
 #include "L6474.h"
 #include "interrupt.h"
-#include "serial.h"
 #include "eeprom.h"
+#include "bitbangport.h"
 
 /* firmware version */
 #define FIRMWARE_VERSION    (0x52) /* version 5.2 */
@@ -47,7 +47,7 @@
 #define DIVIDER             ((FOSC/(16L * BAUD) - 1))
 #if DEBUG_INFO
 #warning debug info enabled
-#define debug_putc(c)       uart_putc(c)
+#define debug_putc(c)       DoWriteHostByte(c)
 #define debug_p2x(c)        uart_p2x(c)
 #define debug_p2x_crlf(c)   do{ debug_p2x(c); debug_putc('\r'); debug_putc('\n'); } while (0)
 #define debug_p8x(c)        uart_p8x(c)
@@ -201,7 +201,7 @@ void main(void) {
     for (;;) {
         CLEAR_TOTAL_1MS_CLICK();
         while (total_1ms_tick < 1000L/* 1 second */);
-        uart_putc('0');
+        DoWriteHostByte('0');
     }
 #endif
     /*
@@ -308,17 +308,21 @@ void main(void) {
     for (;;) {
         CLEAR_TOTAL_1MS_CLICK();
         while (total_1ms_tick < 1000L/* 1 second */);
-        uart_putc('0');
+        DoWriteHostByte('0');
     }
 #endif
 
 #if DEBUG_DEFAULT_VAL
 #warning "writing default value to eeprom is enabled"
     for (n = 0; n < EEPROM_MAX_BYTE; n++) {
-        write_eeprom_data((M1 * EEPROM_OFFSET) + n, default_value[n]);
-        write_eeprom_data((M2 * EEPROM_OFFSET) + n, default_value[n]);
-        write_eeprom_data((M3 * EEPROM_OFFSET) + n, default_value[n]);
-        write_eeprom_data((M4 * EEPROM_OFFSET) + n, default_value[n]);
+        write_eeprom_data((unsigned char)((M1 * EEPROM_OFFSET) + n),
+                          default_value[n]);
+        write_eeprom_data((unsigned char)((M2 * EEPROM_OFFSET) + n),
+                          default_value[n]);
+        write_eeprom_data((unsigned char)((M3 * EEPROM_OFFSET) + n),
+                          default_value[n]);
+        write_eeprom_data((unsigned char)((M4 * EEPROM_OFFSET) + n),
+                          default_value[n]);
     }
 #endif
 
@@ -360,13 +364,10 @@ state_machine_entry:
             state = STATE_IDLE;
         }
 
-        /* check for RX */
-        if (!PIR1bits.RCIF) {
-            goto state_machine_entry;
-        }
-
         /* receive character and go into state machine */
-        rx = uart_getc();
+        if (DoReadHostByte(&rx) == 0)
+            goto state_machine_entry;
+                
         switch (state) {
             case STATE_IDLE:
                 /* prepare offset */
@@ -391,7 +392,7 @@ state_machine_entry:
                 /* read or write action */
                 switch (rx) {
                     case 'v':
-                        uart_putc(FIRMWARE_VERSION);
+                        DoWriteHostByte(FIRMWARE_VERSION);
                         break;
 
                     case 'x':
@@ -401,52 +402,52 @@ state_machine_entry:
                         /* read 6474 registers */
                         /* ABS_POS */
                         get_abs_pos(motor_unit);
-                        uart_putc(param1);
-                        uart_putc(param2);
-                        uart_putc(param3);
+                        DoWriteHostByte(param1);
+                        DoWriteHostByte(param2);
+                        DoWriteHostByte(param3);
                         /* EL_POS */
                         get_el_pos(motor_unit);
-                        uart_putc(param1);
-                        uart_putc(param2);
+                        DoWriteHostByte(param1);
+                        DoWriteHostByte(param2);
                         /* MARK */
                         get_mark(motor_unit);
-                        uart_putc(param1);
-                        uart_putc(param2);
-                        uart_putc(param3);
+                        DoWriteHostByte(param1);
+                        DoWriteHostByte(param2);
+                        DoWriteHostByte(param3);
                         /* TVAL */
                         get_tval(motor_unit);
-                        uart_putc(param1);
+                        DoWriteHostByte(param1);
                         /* T_FAST */
                         get_t_fast(motor_unit);
-                        uart_putc(param1);
+                        DoWriteHostByte(param1);
                         /* TON_MIN */
                         get_ton_min(motor_unit);
-                        uart_putc(param1);
+                        DoWriteHostByte(param1);
                         /* TOFF_MIN */
                         get_toff_min(motor_unit);
-                        uart_putc(param1);
+                        DoWriteHostByte(param1);
                         /* ADC_OUT */
                         get_adc_out(motor_unit);
-                        uart_putc(param1);
+                        DoWriteHostByte(param1);
                         /* OCD_TH */
                         get_ocd_th(motor_unit);
-                        uart_putc(param1);
+                        DoWriteHostByte(param1);
                         /* STEP_MODE */
                         get_step_mode(motor_unit);
-                        uart_putc(param1);
+                        DoWriteHostByte(param1);
                         /* ALARM_EN */
                         get_alarm_en(motor_unit);
-                        uart_putc(param1);
+                        DoWriteHostByte(param1);
                         /* CONFIG */
                         get_config(motor_unit);
-                        uart_putc(param1);
-                        uart_putc(param2);
+                        DoWriteHostByte(param1);
+                        DoWriteHostByte(param2);
                         /* STATUS */
                         get_status(n);
-                        uart_putc(param1);
-                        uart_putc(param2);
+                        DoWriteHostByte(param1);
+                        DoWriteHostByte(param2);
                         /* CHECKSUM = 0 */
-                        uart_putc(0);
+                        DoWriteHostByte(0);
                         break;
 
                     case 'X':
@@ -457,7 +458,7 @@ state_machine_entry:
                         CLEAR_DATA_BUF();
                         state = STATE_HOST_WRITE;
                         /* echo the character back */
-                        uart_putc(rx);
+                        DoWriteHostByte(rx);
                         break;
                 }
                 break;
@@ -468,7 +469,7 @@ state_machine_entry:
                 rx_index++;
                 if (rx_index < EEPROM_MAX_BYTE) {
                     /* echo the rx */
-                    uart_putc(rx);
+                    DoWriteHostByte(rx);
                 } else {
                     /* check sum */
                     if (chksum == 0) {
@@ -489,7 +490,8 @@ state_machine_entry:
                         }
                         /* write all words to EEPROM */
                         for (n = 0; n < EEPROM_MAX_BYTE; n++) {
-                            write_eeprom_data(eeprom_offset + n, rx_packet[n]);
+                            write_eeprom_data((unsigned char)(eeprom_offset + n),
+                                               rx_packet[n]);
                         }
                         /* copy eeprom data to 6474 */
                         copy_from_eeprom(motor_unit);
@@ -497,7 +499,7 @@ state_machine_entry:
                         /* wrong check sum */
                         rx = chksum;
                     }
-                    uart_putc(rx);
+                    DoWriteHostByte(rx);
                     state = STATE_IDLE;
                 }
                 break;
