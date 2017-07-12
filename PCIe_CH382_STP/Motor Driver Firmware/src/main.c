@@ -32,25 +32,22 @@
 #define FIRMWARE_VERSION    (0x52) /* version 5.2 */
 
 /* debug only, it must be off during normal operation */
-#define DEBUG_INFO          (0) /* must be on for serial debug */
+#define DEBUG_BLINK         (0) /* blink led test */
+#define DEBUG_INFO          (0) /* must be on for output printing debug */
 #define DEBUG_SELF_TEST     (0)
 #define DEBUG_SHOW_TVAL     (0)
-#define DEBUG_SHOW_DOT      (0)
-#define DEBUG_DEFAULT_VAL   (1)
+#define DEBUG_SHOW_DOT      (0) /* continue print 0 */
+#define DEBUG_DEFAULT_VAL   (0)
 
 /* defaults */
 #define POWERUP_DELAY_SEC   (5)
 
-/* serial port */
-#define BAUD                (9600)
-#define FOSC                (32000000L)
-#define DIVIDER             ((FOSC/(16L * BAUD) - 1))
 #if DEBUG_INFO
 #warning debug info enabled
 #define debug_putc(c)       DoWriteHostByte(c)
-#define debug_p2x(c)        uart_p2x(c)
+#define debug_p2x(c)        bitbang_p2x(c)
 #define debug_p2x_crlf(c)   do{ debug_p2x(c); debug_putc('\r'); debug_putc('\n'); } while (0)
-#define debug_p8x(c)        uart_p8x(c)
+#define debug_p8x(c)        bitbang_p8x(c)
 #define debug_p8x_crlf(c)   do{ debug_p8x(c); debug_putc('\r'); debug_putc('\n'); } while (0)
 #else
 #define debug_putc(c)
@@ -64,11 +61,6 @@
 #define STATE_IDLE          (0)
 #define STATE_HOST_WRITE    (1)
 #define STATE_HOST_READ     (2)
-
-/* command and debug code */
-#define HOST_WRITE_CODE     (0xcafeba00UL)
-#define HOST_READ_CODE      (0xcafebe00UL)
-#define HOST_END_CODE       (0xcafec000UL)
 
 /* reset buffer and chksum */
 #define CLEAR_DATA_BUF()    do{rx_index=0;chksum=0;}while(0)
@@ -108,10 +100,6 @@ unsigned char default_value[] = {
 
 /* program entry */
 void main(void) {
-
-    /* set PORTC here so that WCH382's PRSET# can be enabled ASAP */
-    PORTC = PORTC_INIT_VALUE;
-    TRISC = PORTC_TRISC;
 
     /*
      * run internal OSC at 8Mhz
@@ -180,21 +168,18 @@ void main(void) {
 
     PORTB = PORTB_INIT_VALUE;
     TRISB = PORTB_TRISB;
-
-    /* set serial port direction, TX=output RX=input */
-    RCSTAbits.SPEN = 0;
-    RCSTAbits.CREN = 0;
-    TXSTAbits.TXEN = 0;
-    TXSTAbits.BRGH = 0;
-    TXSTAbits.TRMT = 0;
-    SPBRG = DIVIDER;
-    BAUDCONbits.BRG16 = 0;
-    BAUDCONbits.RCIDL = 1;
-    RCSTAbits.SPEN = 1;
-    RCSTAbits.CREN = 1;
-    TXSTAbits.BRGH = 1;
-    TXSTAbits.TRMT = 1;
-    TXSTAbits.TXEN = 1;
+    
+    PORTC = PORTC_INIT_VALUE;
+    TRISC = PORTC_TRISC;
+   
+#if DEBUG_BLINK
+#warning debug led blink enabled
+    for(;;){
+        CLEAR_TOTAL_1MS_CLICK();
+        while (total_1ms_tick < 1000L/* 1 second */);
+        LED_OUT = (unsigned char)~LED_OUT;
+    }
+#endif        
 
 #if DEBUG_SHOW_DOT
 #warning debug show dot enabled
@@ -204,27 +189,22 @@ void main(void) {
         DoWriteHostByte('0');
     }
 #endif
+    
     /*
-     * pause for hardware to become stable, otherwise
-     * the uart will not work for the first few characters
+     * pause for hardware to become stable
      */
     CLEAR_TOTAL_1MS_CLICK();
     while (total_1ms_tick < 1/* 1 ms */);
-
-    /* clear all error by reading error registers */
-    n = RCSTAbits.FERR;
-    n = RCSTAbits.OERR;
-    /* ignore first character */
-    n = RCREG;
 
     /*
      * Set up completed
      */
     /* set motor CS to hi */
     CS_N = 1;
-
+    
     /* Wait 10 seconds for the 12V to be stable */
     for (n = 0; n < 10; n++) {
+        LED_OUT = (unsigned char)~LED_OUT;
         CLEAR_TOTAL_1MS_CLICK();
         while (total_1ms_tick < 1000L/* 1 second */);
     }
@@ -240,6 +220,7 @@ void main(void) {
 #if DEBUG_SELF_TEST
 #warning debug self test enabled
     for (;;) {
+        
         /* self test1: read ALARM_EN */
         get_alarm_en(M1);
         debug_p2x_crlf(param1);
@@ -275,40 +256,31 @@ void main(void) {
         /* 1 seconds delay */
         CLEAR_TOTAL_1MS_CLICK();
         while (total_1ms_tick < 1000L/* 1 second */);
-
     }
 #endif
 
 #if DEBUG_SHOW_TVAL
 #warning debug show tval enabled
-    /* M1 current */
-    debug_p8x_crlf(0x11111111UL);
-    get_tval(M1);
-    debug_p2x_crlf(param1);
+    for(;;){
+        /* M1 current */
+        debug_p8x_crlf(0x11111111UL);
+        get_tval(M1);
+        debug_p2x_crlf(param1);
 
-    /* M2 current */
-    debug_p8x_crlf(0x22222222UL);
-    get_tval(M2);
-    debug_p2x_crlf(param1);
+        /* M2 current */
+        debug_p8x_crlf(0x22222222UL);
+        get_tval(M2);
+        debug_p2x_crlf(param1);
 
-    /* M3 current */
-    debug_p8x_crlf(0x33333333UL);
-    get_tval(M3);
-    debug_p2x_crlf(param1);
+        /* M3 current */
+        debug_p8x_crlf(0x33333333UL);
+        get_tval(M3);
+        debug_p2x_crlf(param1);
 
-    /* M4 current */
-    debug_p8x_crlf(0x44444444UL);
-    get_tval(M4);
-    debug_p2x_crlf(param1);
-
-#endif
-
-#if DEBUG_SHOW_DOT
-#warning debug show dot enabled
-    for (;;) {
-        CLEAR_TOTAL_1MS_CLICK();
-        while (total_1ms_tick < 1000L/* 1 second */);
-        DoWriteHostByte('0');
+        /* M4 current */
+        debug_p8x_crlf(0x44444444UL);
+        get_tval(M4);
+        debug_p2x_crlf(param1);
     }
 #endif
 
