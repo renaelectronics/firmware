@@ -29,10 +29,9 @@ void SetOutData(void){
 
 /* set OutData base on bit 0 of pdata then shift pdata right once  */
 unsigned char DoWriteHostBit(unsigned char* pdata){
-    /* check CS, clock high, timeout in 100ms */
-    CLEAR_TOTAL_1MS_CLICK();
+    /* check CS, clock high */
     for(;;){
-        if ((total_1ms_tick > 100) || HOST_CS || (MX_ENABLE==0))
+        if (HOST_CS || (MX_ENABLE==0))
             return 0;
         if (HOST_INCLK)
             break;
@@ -44,10 +43,8 @@ unsigned char DoWriteHostBit(unsigned char* pdata){
         ClrOutData();
     /* shift data to right once */
     *pdata = (unsigned char)(*pdata >> 1);
-    /* check CS, clock low, timeout in 100ms */
-    CLEAR_TOTAL_1MS_CLICK();
     for(;;){
-        if ((total_1ms_tick > 100) || HOST_CS || (MX_ENABLE==0))
+        if (HOST_CS || (MX_ENABLE==0))
             return 0;
         if (!HOST_INCLK)
             break;
@@ -78,10 +75,8 @@ unsigned char DoWriteHostByte(unsigned char data){
 unsigned char DoReadHostBit(unsigned char *pdata){
     /* shift data right once */
     *pdata = (unsigned char)(*pdata >> 1);
-    /* check CS, clock high, timeout in 100ms */
-    CLEAR_TOTAL_1MS_CLICK();
     for(;;){
-        if ((total_1ms_tick > 100) || HOST_CS || (MX_ENABLE==0))
+        if (HOST_CS || (MX_ENABLE==0))
             return 0;
         if (HOST_INCLK)
             break;
@@ -91,10 +86,9 @@ unsigned char DoReadHostBit(unsigned char *pdata){
         *pdata = (unsigned char)(*pdata | 0x80);
     else
         *pdata = (unsigned char)(*pdata & 0x7f);
-    /* check CS, clock low, timeout in 100ms */
-    CLEAR_TOTAL_1MS_CLICK();
+    /* check CS, clock low */
     for(;;){
-        if ((total_1ms_tick > 100) || HOST_CS || (MX_ENABLE==0))
+        if (HOST_CS || (MX_ENABLE==0))
             return 0;
         if (!HOST_INCLK)
             break;
@@ -118,6 +112,20 @@ unsigned char DoReadHostByte(unsigned char *pdata){
     ClrOutData();
     return 1;
 }
-  
+     
+/* Put an 8 bit HEX number to bit bang port */
+void bitbang_p2x(char input_byte) {
+    unsigned char ascii_value[16] = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'a', 'b', 'c', 'd', 'e', 'f'
+    };
+    DoWriteHostByte(ascii_value[(unsigned char)((input_byte >> 4) & 0xf)]);
+    DoWriteHostByte(ascii_value[(unsigned char)(input_byte & 0xf)]);
+}
 
-    
+void bitbang_p8x(unsigned long value) {
+    bitbang_p2x((value >> 24) & 0xff);
+    bitbang_p2x((value >> 16) & 0xff);
+    bitbang_p2x((value >> 8) & 0xff);
+    bitbang_p2x(value & 0xff);
+}

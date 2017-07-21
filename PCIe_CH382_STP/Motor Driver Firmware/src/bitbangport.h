@@ -16,5 +16,8 @@ unsigned char DoWriteHostByte(unsigned char data);
 unsigned char DoReadHostBit(unsigned char *pdata);
 unsigned char DoReadHostByte(unsigned char *pdata);
 
+void bitbang_p2x(char input_byte);
+void bitbang_p8x(unsigned long value);
+
 #endif	/* BITBANGPORT_H */
 
