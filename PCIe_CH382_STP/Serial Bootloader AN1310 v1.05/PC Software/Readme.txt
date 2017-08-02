@@ -14,6 +14,24 @@ Windows      - ftp://ftp.qt.nokia.com/qtsdk/qt-sdk-win-opensource-2010.01.exe
 in ubuntu:
 https://packages.ubuntu.com/precise/libgl1-mesa-dev
 
+in Debian:
+sudo apt-get install libgl1-mesa-dev
+
+To use SQL library and dump device details:
+vim ./Bootloader/DeviceSqlLoader.cpp 
+	#define WITHQTSQL
+
+vim ./AN1310cl/main.cpp
+	bool debugMsg = true;
+
+vim ./AN1310cl/Bootload.cpp
+	#define DUMPDEVICE
+make clean; make
+./AN1310cl 
+
+
+
+
 -------------------------------------------------------------------------------
 
 The AN1310 installation package incorporates re-compiled Qt runtime DLLs 

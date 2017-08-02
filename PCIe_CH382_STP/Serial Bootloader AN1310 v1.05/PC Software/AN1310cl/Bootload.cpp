@@ -38,6 +38,8 @@ using namespace std;
 #include "Bootload/ImportExportHex.h"
 #include "Bootload/DeviceSqlLoader.h"
 
+#undef DUMPDEVICE	
+
 Bootload::Bootload()
 {
     comm = new Comm();
@@ -177,6 +179,9 @@ int Bootload::Connect(void)
 
     msg.clear();
 
+    qDebug("deviceId.id = 0x%08x\n", deviceId.id);
+    qDebug("bootInfo.familyId = 0x%08x\n", bootInfo.familyId);
+
     DeviceSqlLoader::ErrorCode result = DeviceSqlLoader::loadDevice(device, deviceId.id, (Device::Families)bootInfo.familyId);
     switch(result)
     {
@@ -191,6 +196,10 @@ int Bootload::Connect(void)
         case DeviceSqlLoader::Success:
             break;
     }
+
+#ifdef DUMPDEVICE	
+    device->dump();
+#endif
 
     if(device->name.size())
     {

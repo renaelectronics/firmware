@@ -183,6 +183,7 @@ public:
     bool HasValidResetVector(unsigned int* data) const;
     bool ResetVectorJumpsToBootloader(unsigned int* data) const;
     ConfigWord ConfigWordByAddress(unsigned int address);
+    void dump();
 
 protected:
     int findInstruction(unsigned int* data, unsigned int opcode, unsigned int opcodeMask, unsigned int endAddress) const;

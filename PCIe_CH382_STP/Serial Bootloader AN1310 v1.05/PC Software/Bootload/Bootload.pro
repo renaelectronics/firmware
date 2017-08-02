@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT -= gui
-QT += sql
+#QT += sql
 TARGET = Bootload
 TEMPLATE = lib
 CONFIG += staticlib

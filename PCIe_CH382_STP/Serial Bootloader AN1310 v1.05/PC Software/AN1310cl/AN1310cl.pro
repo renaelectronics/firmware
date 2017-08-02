@@ -1,11 +1,10 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-08-02T17:44:13
 # -------------------------------------------------
-QT += sql
-QT += widgets
 QT -= gui
 TARGET = AN1310cl
 CONFIG += console
+CONFIG += static
 CONFIG -= app_bundle
 TEMPLATE = app
 QMAKE_CXXFLAGS_RELEASE = -Os
