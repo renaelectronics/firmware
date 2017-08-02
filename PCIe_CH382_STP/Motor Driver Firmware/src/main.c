@@ -492,15 +492,47 @@ state_machine_entry:
                     /* reset position */
                     reset_position(n);
                     /* enable motor */
-                    motor_enable(n);
+                     motor_enable(n);
+                    LED_OUT = 1;
                 }
             }
             motor_enabled = 1;
         }
+        
+        /* clear error status */
+        get_config(M1);
+        get_config(M2);
+        get_config(M3);
+        get_config(M4);
+        
         /* motor enable signal, aka strobe signal is inverted */
         while (MX_ENABLE == 0) {
             /* bit follower */
             PORTB = PORTA;
+            
+            /* error detected */
+            if (FLAG_N == 0){
+                /* Clear Interrupt Flag and enable Timer1 interrupt */
+                PIR1bits.TMR1IF = 0;
+                PIE1bits.TMR1IE = 1;
+                CLEAR_TOTAL_1MS_CLICK();
+                /* disable motor */
+                motor_disable(M1);
+                motor_disable(M2);
+                motor_disable(M3);
+                motor_disable(M4);
+                motor_enabled = 0;
+                state = STATE_IDLE;
+                /* blink LED */
+                for (;;) {
+                    LED_OUT = (unsigned char)~LED_OUT;
+                    CLEAR_TOTAL_1MS_CLICK();
+                    while (total_1ms_tick < 300L/* 0.3 second */);
+                    /* motor enable signal, aka strobe signal is inverted */
+                    if (MX_ENABLE == 1) 
+                        break;
+                }
+            }
         }
         state = STATE_IDLE;
     }
