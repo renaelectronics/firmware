@@ -273,7 +273,10 @@ void MessageOutput(QtMsgType type, const QMessageLogContext &context, const QStr
         fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
     case QtWarningMsg:
-        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+	if (debugMsg){
+	        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", 
+			localMsg.constData(), context.file, context.line, context.function);
+	}
         break;
     case QtCriticalMsg:
         fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
