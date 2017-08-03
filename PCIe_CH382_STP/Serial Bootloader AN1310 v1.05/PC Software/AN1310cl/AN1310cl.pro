@@ -5,6 +5,7 @@ QT -= gui
 TARGET = AN1310cl
 CONFIG += console
 CONFIG += static
+QMAKE_LFLAGS += -static
 CONFIG -= app_bundle
 TEMPLATE = app
 QMAKE_CXXFLAGS_RELEASE = -Os
@@ -19,6 +20,7 @@ unix {
     #LIBS += -L../build-Bootload-Desktop_Qt_5_5_1_GCC_32bit-Debug
     LIBS += -L../QextSerialPort
     LIBS += -L../Bootload
+    LIBS += -L/home/thomastai/Qt/5.5/Src/qtbase/lib
 }
 
 win32 { 
@@ -34,5 +36,5 @@ win32 {
     }
 }
 LIBS += -lBootload \
-    -lQextSerialPort
+    -lQextSerialPort 
 HEADERS += Bootload.h
