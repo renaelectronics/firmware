@@ -33,7 +33,6 @@ Static link QT library:
 
 cd ~/Qt/5.5/Src
 ./configure -developer-build -opensource -nomake examples -nomake tests -static
-qmake -r
 make
 
 
