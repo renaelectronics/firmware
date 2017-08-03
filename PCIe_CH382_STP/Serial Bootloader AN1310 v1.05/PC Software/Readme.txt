@@ -16,6 +16,7 @@ https://packages.ubuntu.com/precise/libgl1-mesa-dev
 
 in Debian:
 sudo apt-get install libgl1-mesa-dev
+sudo apt-get install libxcb*
 
 To use SQL library and dump device details:
 vim ./Bootloader/DeviceSqlLoader.cpp 
@@ -29,7 +30,11 @@ vim ./AN1310cl/Bootload.cpp
 make clean; make
 ./AN1310cl 
 
+Static link QT library:
 
+cd ~/Qt/5.5/Src
+./configure -developer-build -opensource -nomake examples -nomake tests -static
+make
 
 
 -------------------------------------------------------------------------------
