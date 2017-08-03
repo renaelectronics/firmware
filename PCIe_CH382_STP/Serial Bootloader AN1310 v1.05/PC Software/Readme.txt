@@ -31,7 +31,10 @@ make clean; make
 
 Static link QT library:
 
-configure -developer-build -opensource -nomake examples -nomake tests -static
+cd ~/Qt/5.5/Src
+./configure -developer-build -opensource -nomake examples -nomake tests -static
+qmake -r
+make
 
 
 -------------------------------------------------------------------------------
