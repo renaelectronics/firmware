@@ -16,6 +16,7 @@ https://packages.ubuntu.com/precise/libgl1-mesa-dev
 
 in Debian:
 sudo apt-get install libgl1-mesa-dev
+sudo apt-get install libxcb*
 
 To use SQL library and dump device details:
 vim ./Bootloader/DeviceSqlLoader.cpp 
