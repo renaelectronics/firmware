@@ -29,7 +29,9 @@ vim ./AN1310cl/Bootload.cpp
 make clean; make
 ./AN1310cl 
 
+Static link QT library:
 
+configure -developer-build -opensource -nomake examples -nomake tests -static
 
 
 -------------------------------------------------------------------------------
