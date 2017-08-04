@@ -1,0 +1,28 @@
+Format: 1.8
+Date: Wed, 26 Jul 2017 14:17:12 -0400
+Source: renaconf
+Binary: renaconf
+Architecture: source i386
+Version: 1.0.0
+Distribution: unstable
+Urgency: low
+Maintainer: thomastai <thomastai@renaelectronics.com>
+Changed-By: thomastai <thomastai@renaelectronics.com>
+Description: 
+ renaconf   - Utility for Rena Electronics PCIe Stepper Driver
+Changes: 
+ renaconf (1.0.0) unstable; urgency=low
+ .
+   * Initial Release.
+Checksums-Sha1: 
+ ec6a1879ecbf2b2577e76004bd07768b194a9d7a 550 renaconf_1.0.0.dsc
+ 461e0cbf1cb0778b2ed24890cc5d9d0daa09d782 85176 renaconf_1.0.0.tar.gz
+ fdfaf1fe56d490d629bfc69f5bae4aaaea0050db 76326 renaconf_1.0.0_i386.deb
+Checksums-Sha256: 
+ ded358611c2fe4934675a74ea9e5597404c5b532c4e3e2f71bfebef2eaab142f 550 renaconf_1.0.0.dsc
+ 5d7e8b4566a2990d6bf6212a4ca6270ded8fe1f0e7e93a1a31be799e30c036ca 85176 renaconf_1.0.0.tar.gz
+ d6bd19e47688e6ad5af901c5afa2d7012c24e5e7a5548d24761745e33021c4ef 76326 renaconf_1.0.0_i386.deb
+Files: 
+ 9e5c6b84221faa3c1a4ad98ff6d936c0 550 unknown extra renaconf_1.0.0.dsc
+ 03f7b3658ec024f8bfce6f038a2b57d0 85176 unknown extra renaconf_1.0.0.tar.gz
+ 9799fbb6b6c92bc5a2766fb5528c8e66 76326 unknown extra renaconf_1.0.0_i386.deb
