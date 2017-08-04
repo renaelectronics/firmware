@@ -1,0 +1,12 @@
+#!/bin/bash
+sudo rmmod ppdev
+sudo rmmod lp
+sudo rmmod parport_pc
+sudo rmmod parport
+sudo modprobe -a parport_pc; sudo rmmod parport_pc
+sudo modprobe parport
+#sudo modprobe parport_pc io=0xe100 irq=auto
+sudo modprobe parport_pc io=0xdc00 irq=auto
+#sudo modprobe parport_pc io=0xe100 irq=auto
+#sudo modprobe parport_pc io=0xcc00 irq=auto
+sudo modprobe ppdev
