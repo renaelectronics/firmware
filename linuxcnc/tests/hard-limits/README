@@ -1,4 +1,0 @@
-
-This test reproduces Issue #117.  It homes an id-kins machine, starts
-a jog, and then (while moving) trips a limit switch (ie a hard limit).
-
