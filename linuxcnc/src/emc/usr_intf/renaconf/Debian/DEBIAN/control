@@ -1,0 +1,11 @@
+Package: renaconf
+Version: 1.0.0
+Architecture: i386
+Maintainer: thomastai <thomastai@renaelectronics.com>
+Installed-Size: 660
+Section: unknown
+Priority: extra
+Homepage: www.renaelectronics.com 
+Description: Utilities for Rena Electronics PCIe Stepper Driver
+ Utilities for setting up motor current and generate linuxcnc
+ configuration file.
