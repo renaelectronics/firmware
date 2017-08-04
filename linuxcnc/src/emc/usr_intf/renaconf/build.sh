@@ -1,6 +1,8 @@
 #!/bin/bash
 D=Debian/renaconf/files
-# glade file
+echo "remove old package files"
+rm ./Debian/*.deb
+
 echo "copying glade files"
 cp *.glade ${D}/usr/share/linuxcnc/renaconf
 
