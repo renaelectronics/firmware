@@ -7,7 +7,7 @@ rm -f ./Debian/renaconf/files/usr/bin/AN1310cl
 rm -f ./Debian/renaconf/debian/renaconf/DEBIAN/control
 rm -f ./Debian/renaconf/debian/renaconf/DEBIAN/md5sums
 rm -f ./Debian/renaconf/debian/renaconf/DEBIAN/postinst
-rm -r ./Debian/renaconf_1.0.0.dsc
+rm -f ./Debian/renaconf_1.0.0.dsc
 rm -f ./Debian/renaconf_1.0.0_i386.changes
 
 # clean only
