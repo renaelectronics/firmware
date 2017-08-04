@@ -3,15 +3,17 @@ D=Debian/renaconf/files
 echo "remove old package files"
 rm -f ./Debian/*.deb
 rm -f ./Debian/renaconf/debian/renaconf/usr/bin/AN1310cl
-rm -f ./Debian/renaconf/files/usr/bin/AN1310cl
 rm -f ./Debian/renaconf/debian/renaconf/DEBIAN/control
 rm -f ./Debian/renaconf/debian/renaconf/DEBIAN/md5sums
 rm -f ./Debian/renaconf/debian/renaconf/DEBIAN/postinst
 rm -f ./Debian/renaconf_1.0.0.dsc
 rm -f ./Debian/renaconf_1.0.0_i386.changes
+rm -f ./Debian/renaconf_1.0.0.tar.gz
 
 # clean only
 if [ "$1" = "clean" ]; then
+	# remove binary
+	rm -f ./Debian/renaconf/files/usr/bin/AN1310cl
 	echo "clean only"
 	exit
 fi
