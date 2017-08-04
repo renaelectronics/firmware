@@ -150,8 +150,8 @@ void options_to_buf(struct motor_options *p, char *pbuf)
 	/* EEPROM_STEP_MODE, bit7,3 must be 1 */
 	pbuf[EEPROM_STEP_MODE] = 0x88 | p->step_mode;
 
-	/* EEPROM_ALARM_EN */
-	pbuf[EEPROM_ALARM_EN] = 0xff;
+	/* EEPROM_ALARM_EN *//* overcurrent, thermal shutdown/warning, undervoltage */
+	pbuf[EEPROM_ALARM_EN] = 0x0f;
 
 	/* EEPROM_CONFIG: TOFF[14:10]=pwm_off POW_SR[9:8]=0x02 */
 	n = p->pwm_off / 4.0;
