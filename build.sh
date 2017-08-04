@@ -1,6 +1,7 @@
 #!/bin/bash
 DIR=`pwd`
 USRBIN=$DIR/linuxcnc/src/emc/usr_intf/renaconf/Debian/renaconf/files/usr/bin
+DEB=renaconf_1.0.0_i386.deb
 
 # AN1310cl
 echo "build AN1310cl ... "
@@ -21,3 +22,11 @@ fi
 # renaconf and create package
 cd $DIR/linuxcnc/src/emc/usr_intf/renaconf
 ./build.sh $1
+
+cd $DIR
+rm -f $DEB
+A=`find -name $DEB` 
+if [ ! -z $A ]; then
+	ln -s $A $DEB	
+fi
+	
