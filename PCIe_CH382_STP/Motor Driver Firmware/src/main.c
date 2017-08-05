@@ -415,7 +415,7 @@ state_machine_entry:
                         DoWriteHostByte(param1);
                         DoWriteHostByte(param2);
                         /* STATUS */
-                        get_status(n);
+                        get_status(motor_unit);
                         DoWriteHostByte(param1);
                         DoWriteHostByte(param2);
                         /* CHECKSUM = 0 */
