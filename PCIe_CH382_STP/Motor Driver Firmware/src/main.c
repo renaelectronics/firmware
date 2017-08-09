@@ -62,6 +62,9 @@
 #define STATE_HOST_WRITE    (1)
 #define STATE_HOST_READ     (2)
 
+#define ENABLE_INTERRUPT() do{ INTCONbits.GIE = 1; INTCONbits.PEIE = 1; PIR1bits.TMR1IF = 0; PIE1bits.TMR1IE = 1;}while(0)
+#define DISABLE_INTERRUPT() do{ INTCONbits.GIE = 0; INTCONbits.PEIE = 0; PIR1bits.TMR1IF = 0; PIE1bits.TMR1IE = 0;}while(0)
+
 /* reset buffer and chksum */
 #define CLEAR_DATA_BUF()    do{rx_index=0;chksum=0;}while(0)
 
@@ -150,12 +153,6 @@ void main(void) {
     PIE1bits.TMR1IE = 1;
     CLEAR_TOTAL_1MS_CLICK();
 
-    /*
-     * Global interrupt enable and peripheral interrupt
-     */
-    INTCONbits.GIE = 1;
-    INTCONbits.PEIE = 1;
-
     /* set PORTA to all digital io */
     ADCON1bits.PCFG0 = 1;
     ADCON1bits.PCFG1 = 1;
@@ -172,6 +169,11 @@ void main(void) {
     PORTC = PORTC_INIT_VALUE;
     TRISC = PORTC_TRISC;
    
+    /*
+     * Global interrupt enable and peripheral interrupt
+     */
+    ENABLE_INTERRUPT();
+        
 #if DEBUG_BLINK
 #warning debug led blink enabled
     for(;;){
@@ -202,8 +204,8 @@ void main(void) {
     /* set motor CS to hi */
     CS_N = 1;
     
-    /* Wait 10 seconds for the 12V to be stable */
-    for (n = 0; n < 10; n++) {
+    /* Wait 15 seconds for the 12V to be stable */
+    for (n = 0; n < 15; n++) {
         LED_OUT = (unsigned char)~LED_OUT;
         CLEAR_TOTAL_1MS_CLICK();
         while (total_1ms_tick < 1000L/* 1 second */);
@@ -323,9 +325,7 @@ state_machine_entry:
 
         /* change motor state to disable */
         if (motor_enabled) {
-            /* Clear Interrupt Flag and enable Timer1 interrupt */
-            PIR1bits.TMR1IF = 0;
-            PIE1bits.TMR1IE = 1;
+            ENABLE_INTERRUPT();
             CLEAR_TOTAL_1MS_CLICK();
             /* disable motor */
             motor_disable(M1);
@@ -480,9 +480,7 @@ state_machine_entry:
     } else {
         /* enable motors once */
         if (!motor_enabled) {
-            /* Clear Interrupt Flag and disable Timer1 interrupt */
-            PIR1bits.TMR1IF = 0;
-            PIE1bits.TMR1IE = 0;
+            DISABLE_INTERRUPT();
             CLEAR_TOTAL_1MS_CLICK();
             /* copy motor stepping signals before enabling the motors */
             PORTB = PORTA;
@@ -512,9 +510,7 @@ state_machine_entry:
             
             /* error detected */
             if (FLAG_N == 0){
-                /* Clear Interrupt Flag and enable Timer1 interrupt */
-                PIR1bits.TMR1IF = 0;
-                PIE1bits.TMR1IE = 1;
+                ENABLE_INTERRUPT();
                 CLEAR_TOTAL_1MS_CLICK();
                 /* disable motor */
                 motor_disable(M1);
@@ -529,8 +525,10 @@ state_machine_entry:
                     CLEAR_TOTAL_1MS_CLICK();
                     while (total_1ms_tick < 300L/* 0.3 second */);
                     /* motor enable signal, aka strobe signal is inverted */
-                    if (MX_ENABLE == 1) 
+                    if (MX_ENABLE == 1){
+                        LED_OUT = 1;
                         break;
+                    }
                 }
             }
         }
