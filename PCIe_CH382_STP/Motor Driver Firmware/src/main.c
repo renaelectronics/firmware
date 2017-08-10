@@ -79,6 +79,7 @@ unsigned char motor_enabled;
 unsigned char state;
 unsigned char n;
 unsigned char value;
+unsigned char last_value;
 
 #if DEBUG_DEFAULT_VAL
 #warning "default motor value is enabled"
@@ -315,6 +316,7 @@ void main(void) {
     }
 
     /* initial value */
+    LED_OUT = 1;
     CLEAR_DATA_BUF();
     state = STATE_IDLE;
 
@@ -482,8 +484,6 @@ state_machine_entry:
         if (!motor_enabled) {
             DISABLE_INTERRUPT();
             CLEAR_TOTAL_1MS_CLICK();
-            /* copy motor stepping signals before enabling the motors */
-            PORTB = PORTA;
             /* only enable the unit if the eeprom is valid */
             for (n = M1; n <= M4; n++) {
                 if ((!blank_check(n)) && chksum_check(n)) {
@@ -495,6 +495,9 @@ state_machine_entry:
                 }
             }
             motor_enabled = 1;
+            /* copy motor stepping signals before enabling the motors */
+            PORTB = PORTA;
+            LED_OUT = 0;
         }
         
         /* clear error status */
@@ -505,6 +508,7 @@ state_machine_entry:
         
         /* motor enable signal, aka strobe signal is inverted */
         while (MX_ENABLE == 0) {
+            
             /* bit follower */
             PORTB = PORTA;
             
