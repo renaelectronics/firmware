@@ -555,9 +555,10 @@ class Data:
         dict['EEPROM_TVAL'] = 0.03125 * (int(dict['EEPROM_TVAL'], 16) + 1)
         dict['EEPROM_STEP_MODE'] = min(1 << (int(dict['EEPROM_STEP_MODE'], 16) & 0x7), 16)
         # motor offtime is stored in the upper 6 bits of EEPROM_CONFIG
+        # offtime cannot be lower than 8us, otherwise it will overheat
         dict['EEPROM_CONFIG_TOFF'] = 4 * (int(dict['EEPROM_CONFIG'], 16) >> 10)
-        if dict['EEPROM_CONFIG_TOFF'] == 0:
-            dict['EEPROM_CONFIG_TOFF'] = 4
+        if (dict['EEPROM_CONFIG_TOFF'] == 0) or (dict['EEPROM_CONFIG_TOFF'] < 8):
+            dict['EEPROM_CONFIG_TOFF'] = 8
         dict['EEPROM_TOFF_MIN'] = 0.5 * (int(dict['EEPROM_TOFF_MIN'], 16) + 1)
         dict['EEPROM_TON_MIN'] = 0.5 * (int(dict['EEPROM_TON_MIN'], 16) + 1)
 
