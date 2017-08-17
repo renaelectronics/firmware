@@ -189,6 +189,7 @@ int main(int argc, char **argv)
 	 * Doc ID 022529 Rev 3
 	 */
 	memset(&p, 0, sizeof(struct motor_options));
+	strcpy(p.parport, "/dev/parport0");
 	p.motor = 0;
 	p.version = 0;
 	p.current = 0.03125;
@@ -214,7 +215,7 @@ int main(int argc, char **argv)
 	}
 
 	/* initialize parallel port */
-	fd = parport_init("/dev/parport0");
+	fd = parport_init(p.parport);
 	if (fd <0){
 		printf("failed to initialize parallel port\n");
 		exit (0);
