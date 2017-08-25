@@ -45,7 +45,7 @@ static void print_usage(int argc, char **argv){
 	printf("    -z, --console      read from device\n");
 	printf("    -a, --force        force strobe to on for 5 seconds\n");
 	printf("    -v, --version      read firmware version from device\n");
-	printf("    -d, --device       parport port device name, default is /dev/parport0\n");
+	printf("    -p, --device       parport port device name, default is /dev/parport0\n");
 	printf("    -m, --motor        motor unit\n");
 	printf("    -r, --read         read motor setting information\n");
 	printf("    -c, --curent       drive current, 0.03125 to 4.00 (A)\n");

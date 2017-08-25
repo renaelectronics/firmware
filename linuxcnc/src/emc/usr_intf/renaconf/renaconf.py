@@ -360,8 +360,8 @@ class Data:
         # default value
         self.motor_current_default = 0.03125 *32
         self.motor_hscale_offtime_default = 4 * 11
-        self.motor_hscale_min_offtime_default = 0.5 * 42
-        self.motor_hscale_min_ontime_default = 0.5 * 42
+        self.motor_hscale_min_offtime_default = 0.5 * 1
+        self.motor_hscale_min_ontime_default = 0.5 * 1
 
         # x motor setting
         self.xmicrostep = 0
@@ -555,9 +555,10 @@ class Data:
         dict['EEPROM_TVAL'] = 0.03125 * (int(dict['EEPROM_TVAL'], 16) + 1)
         dict['EEPROM_STEP_MODE'] = min(1 << (int(dict['EEPROM_STEP_MODE'], 16) & 0x7), 16)
         # motor offtime is stored in the upper 6 bits of EEPROM_CONFIG
+        # offtime cannot be lower than 8us, otherwise it will overheat
         dict['EEPROM_CONFIG_TOFF'] = 4 * (int(dict['EEPROM_CONFIG'], 16) >> 10)
-        if dict['EEPROM_CONFIG_TOFF'] == 0:
-            dict['EEPROM_CONFIG_TOFF'] = 4
+        if (dict['EEPROM_CONFIG_TOFF'] == 0) or (dict['EEPROM_CONFIG_TOFF'] < 8):
+            dict['EEPROM_CONFIG_TOFF'] = 8
         dict['EEPROM_TOFF_MIN'] = 0.5 * (int(dict['EEPROM_TOFF_MIN'], 16) + 1)
         dict['EEPROM_TON_MIN'] = 0.5 * (int(dict['EEPROM_TON_MIN'], 16) + 1)
 

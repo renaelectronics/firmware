@@ -150,8 +150,9 @@ void options_to_buf(struct motor_options *p, char *pbuf)
 	/* EEPROM_STEP_MODE, bit7,3 must be 1 */
 	pbuf[EEPROM_STEP_MODE] = 0x88 | p->step_mode;
 
-	/* EEPROM_ALARM_EN *//* overcurrent, thermal shutdown/warning */
-	pbuf[EEPROM_ALARM_EN] = 0x07;
+	/* EEPROM_ALARM_EN */
+	/* overcurrent, thermal shutdown, thermal warning, under voltage*/
+	pbuf[EEPROM_ALARM_EN] = 0x0f;
 
 	/* EEPROM_CONFIG: TOFF[14:10]=pwm_off POW_SR[9:8]=0x02 */
 	n = p->pwm_off / 4.0;
@@ -189,6 +190,7 @@ int main(int argc, char **argv)
 	 * Doc ID 022529 Rev 3
 	 */
 	memset(&p, 0, sizeof(struct motor_options));
+	strcpy(p.parport, "/dev/parport0");
 	p.motor = 0;
 	p.version = 0;
 	p.current = 0.03125;
@@ -214,7 +216,7 @@ int main(int argc, char **argv)
 	}
 
 	/* initialize parallel port */
-	fd = parport_init("/dev/parport0");
+	fd = parport_init(p.parport);
 	if (fd <0){
 		printf("failed to initialize parallel port\n");
 		exit (0);

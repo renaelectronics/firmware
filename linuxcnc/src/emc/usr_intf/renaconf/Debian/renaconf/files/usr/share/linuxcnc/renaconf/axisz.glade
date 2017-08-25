@@ -1076,7 +1076,7 @@
     <property name="page_increment">0.03125</property>
   </object>
   <object class="GtkAdjustment" id="zmotor_offtime_adjust">
-    <property name="lower">4</property>
+    <property name="lower">8</property>
     <property name="upper">124</property>
     <property name="step_increment">4</property>
     <property name="page_increment">4</property>
