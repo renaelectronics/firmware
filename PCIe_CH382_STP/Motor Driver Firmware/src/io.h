@@ -25,12 +25,12 @@
 #define PORTB_INIT_VALUE    0xFF
 #define M1_STCK             PORTBbits.RB0 /* 0, output */
 #define M1_DIR              PORTBbits.RB1 /* 0, output */
-#define M4_STCK             PORTBbits.RB2 /* 0, output */
-#define M4_DIR              PORTBbits.RB3 /* 0, output */
+#define M2_STCK             PORTBbits.RB2 /* 0, output */
+#define M2_DIR              PORTBbits.RB3 /* 0, output */
 #define M3_STCK             PORTBbits.RB4 /* 0, output */
 #define M3_DIR              PORTBbits.RB5 /* 0, output */
-#define M2_STCK             PORTBbits.RB6 /* 0, output */
-#define M2_DIR              PORTBbits.RB7 /* 0, output */
+#define M4_STCK             PORTBbits.RB6 /* 0, output */
+#define M4_DIR              PORTBbits.RB7 /* 0, output */
 
 /* PORT C */
 #define PORTC_TRISC         0x93 /* RC7=FLAG_N, RC4=SDI, RC0=STROBE, RC1=FIRMWARE SW are input */
