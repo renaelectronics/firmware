@@ -490,7 +490,7 @@ state_machine_entry:
                     /* reset position */
                     reset_position(n);
                     /* enable motor */
-                     motor_enable(n);
+                    motor_enable(n);
                     LED_OUT = 1;
                 }
             }
