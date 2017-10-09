@@ -360,8 +360,8 @@ class Data:
         # default value
         self.motor_current_default = 0.03125 *32
         self.motor_hscale_offtime_default = 4 * 11
-        self.motor_hscale_min_offtime_default = 0.5 * 1
-        self.motor_hscale_min_ontime_default = 0.5 * 1
+        self.motor_hscale_min_offtime_default = 0.5 * 42 
+        self.motor_hscale_min_ontime_default = 0.5 * 42
 
         # x motor setting
         self.xmicrostep = 0

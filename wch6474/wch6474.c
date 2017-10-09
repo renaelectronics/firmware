@@ -195,8 +195,8 @@ int main(int argc, char **argv)
 	p.version = 0;
 	p.current = 0.03125;
 	p.pwm_off = 44.0;
-	p.t_fast = 4.0;
-	p.t_step = 20.0;
+	p.t_fast = 2.0;
+	p.t_step = 18.0;;
 	p.ton_min = 21.0;
 	p.toff_min = 21.0;
 	p.ocd_th = 8 * 0.375;
