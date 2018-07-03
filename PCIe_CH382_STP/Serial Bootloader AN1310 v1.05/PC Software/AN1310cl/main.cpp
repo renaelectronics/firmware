@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
     bool verify = false;
     bool run = false;
     bool assertBreak = false;
+    bool connectOnly = false;
 
     QString hexFile;
 
@@ -131,6 +132,10 @@ int main(int argc, char *argv[])
                 }
                 break;
 
+            case 'o':
+                connectOnly = true;
+                break;
+
             default:
                 hexFile = args[i];
             }
@@ -150,7 +155,7 @@ int main(int argc, char *argv[])
              << "Copyright (c) 2010-2011, Microchip Technology Inc.\n" << endl;
     }
 
-    if(erase || program || eeprom || config || verify || run || assertBreak)
+    if(erase || program || eeprom || config || verify || run || assertBreak || connectOnly)
     {
         int result;
 
@@ -179,6 +184,10 @@ int main(int argc, char *argv[])
         if(result)
         {
             return result;
+        }
+
+	if (connectOnly){
+            return 0;
         }
 
         if((program || verify || eeprom || config) && !hexFile.isEmpty())
@@ -253,6 +262,7 @@ int main(int argc, char *argv[])
              << "   -c - Write config bits using specified hex file contents\n"
              << "   -v - Verify device matches the data in the specified hex file\n"
              << "   -a - Assert BREAK state for manual bootloader re-entry\n"
+             << "   -o - Connect to firmware then exit without any actions\n"
              << "   -r - Run application firmware" << endl;
         return 1;
     }
