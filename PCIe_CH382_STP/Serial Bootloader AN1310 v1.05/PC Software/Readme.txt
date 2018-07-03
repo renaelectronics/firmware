@@ -32,6 +32,9 @@ make clean; make
 
 Static link QT library:
 
+Download Qt5.5.1 32bits
+Run the installer and install qt in /home/thomastai/Qt
+
 cd ~/Qt/5.5/Src
 ./configure -developer-build -opensource -nomake examples -nomake tests -static
 make
