@@ -1,4 +1,5 @@
 #!/bin/bash
+QMAKE=/home/thomastai/Qt/5.5/gcc/bin/qmake
 make clean
 rm -f ./AN1310cl/AN1310cl
 rm -f ./AN1310ui/AN1310ui
@@ -16,7 +17,7 @@ fi
 for i in Bootload QextSerialPort AN1310ui AN1310cl
 do
 	cd $i
-	qmake
+	${QMAKE}
 	cd ../
 done
 make
