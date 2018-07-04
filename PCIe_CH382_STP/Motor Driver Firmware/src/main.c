@@ -68,7 +68,7 @@
 /* reset buffer and chksum */
 #define CLEAR_DATA_BUF()    do{rx_index=0;chksum=0;}while(0)
 
-/* globel variables */
+/* global variables */
 unsigned char eeprom_offset;
 unsigned char motor_unit;
 unsigned char rx_packet[EEPROM_MAX_BYTE];
