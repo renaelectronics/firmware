@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/Motor_Driver_Firmware_V5.2.X_LPT_interface.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=Motor_Driver_Firmware_V5.2.X_LPT_interface.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=motordriverfirmwarev5.2.xlptinterface/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/Motor_Driver_Firmware.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=Motor_Driver_Firmware.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=motordriverfirmware/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/motordriverfirmwarev5.2.xlptinterface/bin
+makeDirectory ${TMPDIR}/motordriverfirmware/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/motordriverfirmwarev5.2.xlptinterface.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/motordriverfirmware.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/motordriverfirmwarev5.2.xlptinterface.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/motordriverfirmware.tar *
 checkReturnCode
 
 # Cleanup

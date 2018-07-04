@@ -9,9 +9,9 @@
       <itemPath>src/eeprom.h</itemPath>
       <itemPath>src/interrupt.h</itemPath>
       <itemPath>src/io.h</itemPath>
-      <itemPath>src/serial.h</itemPath>
       <itemPath>src/pconfig.h</itemPath>
       <itemPath>src/spi.h</itemPath>
+      <itemPath>src/bitbangport.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -24,9 +24,9 @@
       <itemPath>src/eeprom.c</itemPath>
       <itemPath>src/interrupt.c</itemPath>
       <itemPath>src/main.c</itemPath>
-      <itemPath>src/serial.c</itemPath>
       <itemPath>src/spi_open.c</itemPath>
       <itemPath>src/spi_writ.c</itemPath>
+      <itemPath>src/bitbangport.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -47,7 +47,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>1.40</languageToolchainVersion>
+        <languageToolchainVersion>1.42</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <compileType>
@@ -104,7 +104,7 @@
       </HI-TECH-COMP>
       <HI-TECH-LINK>
         <property key="additional-options-checksum" value=""/>
-        <property key="additional-options-code-offset" value=""/>
+        <property key="additional-options-code-offset" value="0x400"/>
         <property key="additional-options-command-line" value=""/>
         <property key="additional-options-errata" value=""/>
         <property key="additional-options-extend-address" value="false"/>
