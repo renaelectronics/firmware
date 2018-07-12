@@ -1,5 +1,6 @@
 /* Modification History:
  *
+ * 07/12/2018 change motor driver to TMC2660
  * 02/10/2017 modify to use parallel port for motor setup
  * 10/25/2016 remove motor STBY_RESET pin, FIRMWARE_VERSION=0x51
  * 10/21/2016 set BAUDCONbits.BRG16 = 0
@@ -249,7 +250,6 @@ void main(void) {
     }
 #endif
 
-    
     /* copy eeprom value to motor driver chip */
     for (n = M1; n <= M4; n++) {
            copy_from_eeprom(n);
