@@ -17,7 +17,7 @@
  * 12/15/2012 lower brown-out value
  */
 
-/* for working together with a bootloader, set linker code offset = 0x400*/
+/* for working together with a bootloader, set linker code offset = 0x400 */
 #define USE_OR_MASKS
 #include <p18cxxx.h>
 #include <stdio.h>
