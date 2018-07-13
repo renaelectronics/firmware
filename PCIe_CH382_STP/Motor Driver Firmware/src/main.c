@@ -87,10 +87,10 @@ unsigned char debug_value;
 #if DEBUG_DEFAULT_VAL
 #warning "default motor value is enabled"
 unsigned char default_value[EEPROM_MAX_BYTE] = {
-    0x0e, 0x00, 0x40, /* drvconf */
-    0x0c, 0x00, 0x00, /* sgcsconf */
+    0x0e, 0x00, 0x00, /* drvconf */
+    0x0c, 0x00, 0x03, /* sgcsconf */
     0x0a, 0x00, 0x00, /* smarten */
-    0x09, 0xc1, 0x8f, /* chopconf */
+    0x09, 0xc1, 0x87, /* chopconf */
     0x00, 0x00, 0x08, /* drvctrl */
     0x00              /* checksum, to be filled in */
 };
@@ -249,12 +249,12 @@ void main(void) {
         write_eeprom_data((unsigned char)((M4 * EEPROM_OFFSET) + n), value);
     }
 #endif
-
+    
     /* copy eeprom value to motor driver chip */
     for (n = M1; n <= M4; n++) {
            copy_from_eeprom(n);
     }
-
+    
     /* disable motors */
     motor_enabled = 0;
     motor_disable(M1);
@@ -313,14 +313,13 @@ state_machine_entry:
                 /* read or write action */
                 switch (rx) {
                     case 'E':
-                        debug_value += 1;
                         motor_enable(M1);
-                        DoWriteHostByte(debug_value);
+                        DoWriteHostByte(FIRMWARE_VERSION);
                         break;
                         
                     case 'e':
                         motor_disable(M1);
-                        DoWriteHostByte(0xe0);
+                        DoWriteHostByte(FIRMWARE_VERSION);
                         break;
                         
                     case 'v':
