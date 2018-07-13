@@ -28,18 +28,18 @@ static unsigned long chopconf[4];
 
 /* variables */
 unsigned char spi_rx[3];
-static unsigned char spi_tx[3];
+unsigned char spi_tx[3];
 static unsigned char n, i, offset;
 static unsigned char eeprom_data[3];
 
 /* read eeprom byte by byte and return the unsigned long register value */
-u32 u8tou32(u8 byte) {
+static u32 u8tou32(u8 byte) {
     u32 tmp32;
     tmp32 = byte;
     return tmp32;
 }
 
-unsigned long eeprom_reg(u8 addr, u32 fixed, u32 mask) {
+static unsigned long eeprom_reg(u8 addr, u32 fixed, u32 mask) {
     u32 value;
     value = (u8tou32(read_eeprom_data(addr)) << 16) & 0x0f0000UL;
     value |= ((u32) (u8tou32(read_eeprom_data((u8) (addr + 1))) << 8));
@@ -47,10 +47,6 @@ unsigned long eeprom_reg(u8 addr, u32 fixed, u32 mask) {
     value &= mask;
     value |= fixed;
     return value;
-}
-
-unsigned char get_eeprom_offset(char unit) {
-    return ((unsigned char) (unit * EEPROM_OFFSET));
 }
 
 /* Send SPI data and read from the chain 
@@ -63,7 +59,7 @@ unsigned char get_eeprom_offset(char unit) {
  * 
  */
 static void write_spi_chain(char unit, unsigned long data) {
-
+    
     /* CS_N must be low to select the motor driver chip */
     CS_N = 0;
 
@@ -87,29 +83,30 @@ static void write_spi_chain(char unit, unsigned long data) {
     delay_us(10);
     return;
 }
-
-void motor_enable_disable(char unit, char enable) {
+static void do_motor_enable(char unit, char enable) {
     u32 value;
 
-    /* chopconf must be start with binary 10011... */
-    value = ((chopconf[unit] & ~(0x0f8000)) | 0x098000);
+    /* chopconf must be start with binary 10011... 
+     * To enable the motor, the TOFF value is restored to
+     * the user specified value
+     */
+    value = ((chopconf[unit] & ~(0x0f8000UL)) | 0x098000UL);
     if (!enable) {
-        value &= 0x0ffff0;
+        value &= 0x0ffff0UL;
     }
     write_spi_chain(unit, value);
 }
 
+unsigned char get_eeprom_offset(char unit) {
+    return ((unsigned char) (unit * EEPROM_OFFSET));
+}
+
 void motor_enable(char unit) {
-
-    /* debug only, set current scale */
-    write_spi_chain(unit, 0x0c0000UL | debug_value);
-
-    /* enable unit */
-    motor_enable_disable(unit, 1);
+    do_motor_enable(unit, 1);
 }
 
 void motor_disable(char unit) {
-    motor_enable_disable(unit, 0);
+    do_motor_enable(unit, 0);
 }
 
 /* read from eeprom and copy into registers */
@@ -143,7 +140,7 @@ void copy_from_eeprom(char unit) {
     value = eeprom_reg((u8)(offset + EEPROM_CHOPCONF), CHOPCONF_VALUE, CHOPCONF_MASK);
     chopconf[unit] = value;
     /* make sure TOFF is 0 to disable the motor */
-    write_spi_chain(unit, value & 0x0ffff0);
+    write_spi_chain(unit, value & 0x0ffff0UL);
 
     /* EEPROM_DRVCTRL */
     value = eeprom_reg((u8)(offset + EEPROM_DRVCTRL), DRVCTRL_VALUE, DRVCTRL_MASK);
