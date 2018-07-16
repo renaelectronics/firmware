@@ -3,7 +3,7 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>Motor Driver Firmware V5.2.X LPT interface</name>
+            <name>Motor Driver Firmware</name>
             <creation-uuid>29cc13a9-2e39-4cdb-ab69-f35e46700dae</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>

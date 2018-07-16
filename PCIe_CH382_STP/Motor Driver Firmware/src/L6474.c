@@ -8,347 +8,143 @@
 #include "eeprom.h"
 #include "L6474.h"
 
-/* global variables for spi response value */
-unsigned char param1;
-unsigned char param2;
-unsigned char param3;
+#define DRVCONF_VALUE   (0x0e0000UL)
+#define SGCSCONF_VALUE  (0x0c0000UL)
+#define SMARTEN_VALUE   (0x0a0000UL)
+#define CHOPCONF_VALUE  (0x098000UL)
+#define DRVCTRL_VALUE   (0x000000UL)
+
+#define DRVCONF_MASK    (0x000300UL)
+#define SGCSCONF_MASK   (0x017f1fUL)
+#define SMARTEN_MASK    (0x00ef6fUL)
+#define CHOPCONF_MASK   (0x007fffUL)
+#define DRVCTRL_MASK    (0x00020fUL)
+
+/* debug value */
+extern unsigned char debug_value;
+
+/* saved motor drvconf */
+static unsigned long chopconf[4];
 
 /* variables */
-static unsigned char spi_tx[4];
-static unsigned char spi_rx[4];
-static unsigned char n, i, value, offset;
+unsigned char spi_rx[3];
+unsigned char spi_tx[3];
+static unsigned char n, i, offset;
+static unsigned char eeprom_data[3];
 
-static unsigned char read_spi_chain_single(char unit) {
-
-    /*
-     * select motor driver chip
-     */
-    CS_N = 0;
-    delay_us(10);
-
-    /* read the chain */
-    while (WriteSPI(CMD_NOP));
-    spi_rx[0] = SSPBUF;
-    while (WriteSPI(CMD_NOP));
-    spi_rx[1] = SSPBUF;
-    while (WriteSPI(CMD_NOP));
-    spi_rx[2] = SSPBUF;
-    while (WriteSPI(CMD_NOP));
-    spi_rx[3] = SSPBUF;
-
-    /*
-     * CS_N must be raised and be kept high for tdisCS (800ns)
-     * in order to allow the device to decode the received command.
-     */
-    CS_N = 1;
-    delay_us(10);
-
-    /* return the response byte */
-    if (unit == M1) return spi_rx[3];
-    if (unit == M2) return spi_rx[2];
-    if (unit == M3) return spi_rx[1];
-    if (unit == M4) return spi_rx[0];
-    return 0;
+/* read eeprom byte by byte and return the unsigned long register value */
+static u32 u8tou32(u8 byte) {
+    u32 tmp32;
+    tmp32 = byte;
+    return tmp32;
 }
 
-static void read_spi_chain(char num_response, char unit) {
-
-    switch (num_response) {
-        case 1:
-            param1 = read_spi_chain_single(unit);
-            break;
-        case 2:
-            param1 = read_spi_chain_single(unit);
-            param2 = read_spi_chain_single(unit);
-            break;
-        case 3:
-            param1 = read_spi_chain_single(unit);
-            param2 = read_spi_chain_single(unit);
-            param3 = read_spi_chain_single(unit);
-            break;
-    }
+static unsigned long eeprom_reg(u8 addr, u32 fixed, u32 mask) {
+    u32 value;
+    value = (u8tou32(read_eeprom_data(addr)) << 16) & 0x0f0000UL;
+    value |= ((u32) (u8tou32(read_eeprom_data((u8) (addr + 1))) << 8));
+    value |= ((u32) (u8tou32(read_eeprom_data((u8) (addr + 2)))));
+    value &= mask;
+    value |= fixed;
+    return value;
 }
 
-static void write_spi_chain(unsigned char value, char unit) {
-
+/* Send SPI data and read from the chain 
+ * After this call rx[] contains the data from the chain
+ * 
+ *   bit pos: 2222 1111 1111 11
+ *            3210 9876 5432 1098 7654 3210
+ *            -----------------------------
+ * bit value: 0000 .... .... .... .... ....
+ * 
+ */
+static void write_spi_chain(char unit, unsigned long data) {
+    
     /* CS_N must be low to select the motor driver chip */
     CS_N = 0;
 
     /* 10 us delay */
     delay_us(10);
 
-    /* prepare temporary command chain */
-    spi_tx[0] = spi_tx[1] = spi_tx[2] = spi_tx[3] = CMD_NOP;
-    if (unit == M1) spi_tx[3] = value;
-    if (unit == M2) spi_tx[2] = value;
-    if (unit == M3) spi_tx[1] = value;
-    if (unit == M4) spi_tx[0] = value;
+    /* write to and read from spi */
+    while (WriteSPI(((data & 0x0f0000UL) >> 16)));
+    spi_rx[0] = SSPBUF;
 
-    /* write to SPI */
-    while (WriteSPI(spi_tx[0]));
-    while (WriteSPI(spi_tx[1]));
-    while (WriteSPI(spi_tx[2]));
-    while (WriteSPI(spi_tx[3]));
+    while (WriteSPI(((data & 0xff00UL) >> 8)));
+    spi_rx[1] = SSPBUF;
 
-    /* CS_N must be raised and be kept high for tdisCS (800ns)
-     * in order to allow the device to decode the received command.
-     */
+    while (WriteSPI((data & 0xffUL)));
+    spi_rx[2] = SSPBUF;
+
+    /* CS_N must be raised and be kept high for a while */
     CS_N = 1;
 
     /* 10 us delay */
     delay_us(10);
     return;
 }
+static void do_motor_enable(char unit, char enable) {
+    u32 value;
 
-/* set, get ABS_POS */
-void set_abs_pos(char unit) {
-    /* set ABS_POS */
-    write_spi_chain(CMD_SETPARAM | ABS_POS, unit);
-    write_spi_chain(param1, unit);
-    write_spi_chain(param2, unit);
-    write_spi_chain(param3, unit);
+    /* chopconf must be start with binary 10011... 
+     * To enable the motor, the TOFF value is restored to
+     * the user specified value
+     */
+    value = ((chopconf[unit] & ~(0x0f8000UL)) | 0x098000UL);
+    if (!enable) {
+        value &= 0x0ffff0UL;
+    }
+    write_spi_chain(unit, value);
 }
 
-void get_abs_pos(char unit) {
-    /* read ABS_POS and return 3 byte response value */
-    write_spi_chain(CMD_GETPARAM | ABS_POS, unit);
-    read_spi_chain(3, unit);
-}
-
-/* set, get EL_POS */
-void set_el_pos(char unit) {
-    /* set ABS_POS */
-    write_spi_chain(CMD_SETPARAM | EL_POS, unit);
-    write_spi_chain(param1, unit);
-    write_spi_chain(param2, unit);
-}
-
-void get_el_pos(char unit) {
-    /* read ABS_POS and return 2 byte response value */
-    write_spi_chain(CMD_GETPARAM | EL_POS, unit);
-    read_spi_chain(2, unit);
-}
-
-/* set, get MARK */
-void set_mark(char unit) {
-    write_spi_chain(CMD_SETPARAM | MARK, unit);
-    write_spi_chain(param1, unit);
-    write_spi_chain(param2, unit);
-    write_spi_chain(param3, unit);
-}
-
-void get_mark(char unit) {
-    write_spi_chain(CMD_GETPARAM | MARK, unit);
-    read_spi_chain(3, unit);
-}
-
-/* set, get TVAL */
-void set_tval(char unit) {
-    write_spi_chain(CMD_SETPARAM | TVAL, unit);
-    write_spi_chain(param1, unit);
-}
-
-void get_tval(char unit) {
-    write_spi_chain(CMD_GETPARAM | TVAL, unit);
-    read_spi_chain(1, unit);
-}
-
-/* set, get T_FAST */
-void set_t_fast(char unit) {
-    write_spi_chain(CMD_SETPARAM | T_FAST, unit);
-    write_spi_chain(param1, unit);
-}
-
-void get_t_fast(char unit) {
-    write_spi_chain(CMD_GETPARAM | T_FAST, unit);
-    read_spi_chain(1, unit);
-}
-
-/* set, get TON_MIN */
-void set_ton_min(char unit) {
-    write_spi_chain(CMD_SETPARAM | TON_MIN, unit);
-    write_spi_chain(param1, unit);
-}
-
-void get_ton_min(char unit) {
-    write_spi_chain(CMD_GETPARAM | TON_MIN, unit);
-    read_spi_chain(1, unit);
-}
-
-/* set, get TOFF_MIN */
-void set_toff_min(char unit) {
-    write_spi_chain(CMD_SETPARAM | TOFF_MIN, unit);
-    write_spi_chain(param1, unit);
-}
-
-void get_toff_min(char unit) {
-    write_spi_chain(CMD_GETPARAM | TOFF_MIN, unit);
-    read_spi_chain(1, unit);
-}
-
-/* set, get ADC_OUT */
-void set_adc_out(char unit) {
-    write_spi_chain(CMD_SETPARAM | ADC_OUT, unit);
-    write_spi_chain(param1, unit);
-}
-
-void get_adc_out(char unit) {
-    write_spi_chain(CMD_GETPARAM | ADC_OUT, unit);
-    read_spi_chain(1, unit);
-}
-
-/* set, get_OCD_TH */
-void set_ocd_th(char unit) {
-    write_spi_chain(CMD_SETPARAM | OCD_TH, unit);
-    write_spi_chain(param1, unit);
-}
-
-void get_ocd_th(char unit) {
-    write_spi_chain(CMD_GETPARAM | OCD_TH, unit);
-    read_spi_chain(1, unit);
-}
-
-/* set, get_STEP_MODE */
-void set_step_mode(char unit) {
-    write_spi_chain(CMD_SETPARAM | STEP_MODE, unit);
-    write_spi_chain(param1, unit);
-}
-
-void get_step_mode(char unit) {
-    write_spi_chain(CMD_GETPARAM | STEP_MODE, unit);
-    read_spi_chain(1, unit);
-}
-
-/* set, get ALARM_EN */
-void set_alarm_en(char unit) {
-    write_spi_chain(CMD_SETPARAM | ALARM_EN, unit);
-    write_spi_chain(param1, unit);
-}
-
-void get_alarm_en(char unit) {
-    write_spi_chain(CMD_GETPARAM | ALARM_EN, unit);
-    read_spi_chain(1, unit);
-}
-
-/* set, get CONFIG */
-void set_config(char unit) {
-    write_spi_chain(CMD_SETPARAM | CONFIG, unit);
-    write_spi_chain(param1, unit);
-    write_spi_chain(param2, unit);
-}
-
-void get_config(char unit) {
-    write_spi_chain(CMD_GETPARAM | CONFIG, unit);
-    read_spi_chain(2, unit);
-}
-
-void reset_position(char unit){
-    param1 = 0;
-    param2 = 0;
-    param3 = 0;
-    set_abs_pos(unit);
-    set_el_pos(unit);
+unsigned char get_eeprom_offset(char unit) {
+    return ((unsigned char) (unit * EEPROM_OFFSET));
 }
 
 void motor_enable(char unit) {
-    write_spi_chain(CMD_ENABLE, unit);
+    do_motor_enable(unit, 1);
 }
 
 void motor_disable(char unit) {
-    write_spi_chain(CMD_DISABLE, unit);
-}
-
-void get_status(char unit) {
-    write_spi_chain(CMD_GETSTATUS, unit);
-    read_spi_chain(2, unit);
-}
-
-/* helper function to return eeprom offset */
-unsigned char get_eeprom_offset(char unit) {
-    if (unit == M1)
-        return M1 * EEPROM_OFFSET;
-
-    if (unit == M2)
-        return M2 * EEPROM_OFFSET;
-
-    if (unit == M3)
-        return M3 * EEPROM_OFFSET;
-
-    if (unit == M4)
-        return M4 * EEPROM_OFFSET;
-    
-    /* default out of range offset */
-    return M4 * EEPROM_OFFSET;
+    do_motor_enable(unit, 0);
 }
 
 /* read from eeprom and copy into registers */
 void copy_from_eeprom(char unit) {
-    
+
+    u32 value;
+
+    /* blank check and chksum_check */
+    if ((blank_check(unit)) || (!chksum_check(unit))) {
+        /* set default chopconf */
+        chopconf[unit] = 0x098000UL;
+        return;
+    }
+
     /* get offset address */
     offset = get_eeprom_offset(unit);
 
-    /* EEPROM_ABS_POS */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_ABS_POS));
-    param2 = read_eeprom_data((unsigned char)(offset + EEPROM_ABS_POS + 1));
-    param3 = read_eeprom_data((unsigned char)(offset + EEPROM_ABS_POS + 2));
-    set_abs_pos(unit);
+    /* EEPROM_DRVCONF */
+    value = eeprom_reg((u8)(offset + EEPROM_DRVCONF), DRVCONF_VALUE, DRVCONF_MASK);
+    write_spi_chain(unit, value);
 
-    /* EEPROM_EL_POS */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_EL_POS));
-    param2 = read_eeprom_data((unsigned char)(offset + EEPROM_EL_POS + 1));
-    set_el_pos(unit);
+    /* EEPROM_SGCSCONF */
+    value = eeprom_reg((u8)(offset + EEPROM_SGCSCONF), SGCSCONF_VALUE, SGCSCONF_MASK);
+    write_spi_chain(unit, value);
 
-    /* EEPROM_MARK */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_MARK));
-    param2 = read_eeprom_data((unsigned char)(offset + EEPROM_MARK + 1));
-    param3 = read_eeprom_data((unsigned char)(offset + EEPROM_MARK + 2));
-    set_mark(unit);
+    /* EEPROM_SMARTEN */
+    value = eeprom_reg((u8)(offset + EEPROM_SMARTEN), SMARTEN_VALUE, SMARTEN_MASK);
+    write_spi_chain(unit, value);
 
-    /* EEPROM_TVAL */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_TVAL));
-    set_tval(unit);
+    /* EEPROM_CHOPCONF */
+    value = eeprom_reg((u8)(offset + EEPROM_CHOPCONF), CHOPCONF_VALUE, CHOPCONF_MASK);
+    chopconf[unit] = value;
+    /* make sure TOFF is 0 to disable the motor */
+    write_spi_chain(unit, value & 0x0ffff0UL);
 
-    /* EEPROM_T_FAST */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_T_FAST));
-    set_t_fast(unit);
-
-    /* EEPROM_TON_MIN */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_TON_MIN));
-    set_ton_min(unit);
-
-    /* EEPROM_TOFF_MIN */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_TOFF_MIN));
-    set_toff_min(unit);
-
-    /* EEPROM_ADC_OUT */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_ADC_OUT));
-    set_adc_out(unit);
-
-    /* EEPROM_OCD_TH */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_OCD_TH));
-    set_ocd_th(unit);
-
-    /* EEPROM_STEP_MODE */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_STEP_MODE));
-    set_step_mode(unit);
-
-    /* EEPROM_ALARM_EN */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_ALARM_EN));
-    set_alarm_en(unit);
-
-    /* reset motor position to 0 */
-    param1 = 0;
-    param2 = 0;
-    param3 = 0;
-    set_abs_pos(unit);
-    set_el_pos(unit);
-    set_mark(unit);
-
-    /* EEPROM_CONFIG */
-    param1 = read_eeprom_data((unsigned char)(offset + EEPROM_CONFIG));
-    param2 = read_eeprom_data((unsigned char)(offset + EEPROM_CONFIG + 1));
-    set_config(unit);
-
+    /* EEPROM_DRVCTRL */
+    value = eeprom_reg((u8)(offset + EEPROM_DRVCTRL), DRVCTRL_VALUE, DRVCTRL_MASK);
+    write_spi_chain(unit, value);
 }
 
 unsigned char blank_check(char unit) {
@@ -356,7 +152,7 @@ unsigned char blank_check(char unit) {
     offset = get_eeprom_offset(unit);
     /* blank check */
     for (n = 0; n < EEPROM_MAX_BYTE; n++) {
-        if (read_eeprom_data((unsigned char)(offset + n)) != 0xff) {
+        if (read_eeprom_data((unsigned char) (offset + n)) != 0xff) {
             return 0;
         }
     }
@@ -364,12 +160,14 @@ unsigned char blank_check(char unit) {
 }
 
 unsigned char chksum_check(char unit) {
+    unsigned char value;
+
     /* get offset address */
     offset = get_eeprom_offset(unit);
     /* checksum */
     value = 0;
     for (n = 0; n < EEPROM_MAX_BYTE; n++) {
-        value += read_eeprom_data((unsigned char)(offset + n));
+        value += read_eeprom_data((unsigned char) (offset + n));
     }
     if (value == 0) {
         return 1;

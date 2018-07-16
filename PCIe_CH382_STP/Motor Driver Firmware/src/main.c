@@ -1,5 +1,6 @@
 /* Modification History:
  *
+ * 07/12/2018 change motor driver to TMC2660
  * 02/10/2017 modify to use parallel port for motor setup
  * 10/25/2016 remove motor STBY_RESET pin, FIRMWARE_VERSION=0x51
  * 10/21/2016 set BAUDCONbits.BRG16 = 0
@@ -16,6 +17,7 @@
  * 12/15/2012 lower brown-out value
  */
 
+/* for working together with a bootloader, set linker code offset = 0x400 */
 #define USE_OR_MASKS
 #include <p18cxxx.h>
 #include <stdio.h>
@@ -29,7 +31,7 @@
 #include "bitbangport.h"
 
 /* firmware version */
-#define FIRMWARE_VERSION    (0x52) /* version 5.2 */
+#define FIRMWARE_VERSION    (0x53) /* version 5.3 */
 
 /* debug only, it must be off during normal operation */
 #define DEBUG_BLINK         (0) /* blink led test */
@@ -37,10 +39,10 @@
 #define DEBUG_SELF_TEST     (0)
 #define DEBUG_SHOW_TVAL     (0)
 #define DEBUG_SHOW_DOT      (0) /* continue print 0 */
-#define DEBUG_DEFAULT_VAL   (0)
+#define DEBUG_DEFAULT_VAL   (1)
 
 /* defaults */
-#define POWERUP_DELAY_SEC   (5)
+#define POWERUP_DELAY_SEC   (1)
 
 #if DEBUG_INFO
 #warning debug info enabled
@@ -68,7 +70,7 @@
 /* reset buffer and chksum */
 #define CLEAR_DATA_BUF()    do{rx_index=0;chksum=0;}while(0)
 
-/* globel variables */
+/* global variables */
 unsigned char eeprom_offset;
 unsigned char motor_unit;
 unsigned char rx_packet[EEPROM_MAX_BYTE];
@@ -80,25 +82,17 @@ unsigned char state;
 unsigned char n;
 unsigned char value;
 unsigned char last_value;
+unsigned char debug_value;
 
 #if DEBUG_DEFAULT_VAL
 #warning "default motor value is enabled"
-unsigned char default_value[] = {
-    /* motor current=1, step mode=1 */
-    0x00, 0x00, 0x00,
-    0x00, 0x00,
-    0x00, 0x00, 0x00,
-    0x20,
-    0x19,
-    0x29,
-    0x29,
-    0x00,
-    0x08,
-    0x89,
-    0xff,
-    0x2e, 0x88,
-    0x00, 0x00,
-    0x2f /* checksum */
+unsigned char default_value[EEPROM_MAX_BYTE] = {
+    0x0e, 0x00, 0x00, /* drvconf */
+    0x0c, 0x00, 0x03, /* sgcsconf */
+    0x0a, 0x00, 0x00, /* smarten */
+    0x09, 0xc1, 0x87, /* chopconf */
+    0x00, 0x00, 0x08, /* drvctrl */
+    0x00              /* checksum, to be filled in */
 };
 #endif
 
@@ -205,14 +199,15 @@ void main(void) {
     /* set motor CS to hi */
     CS_N = 1;
     
-    /* Wait 15 seconds for the 12V to be stable */
-    for (n = 0; n < 15; n++) {
+    /* Powerup delay for the 12V to be stable */
+    for (n = 0; n < POWERUP_DELAY_SEC; n++) {
         LED_OUT = (unsigned char)~LED_OUT;
         CLEAR_TOTAL_1MS_CLICK();
         while (total_1ms_tick < 1000L/* 1 second */);
     }
 
     /* initialize SPI */
+    debug_value = 0;
     CloseSPI();
     OpenSPI(SPI_FOSC_64, MODE_11, SMPMID);
 
@@ -223,98 +218,50 @@ void main(void) {
 #if DEBUG_SELF_TEST
 #warning debug self test enabled
     for (;;) {
-        
-        /* self test1: read ALARM_EN */
-        get_alarm_en(M1);
-        debug_p2x_crlf(param1);
-        get_alarm_en(M2);
-        debug_p2x_crlf(param1);
-        get_alarm_en(M3);
-        debug_p2x_crlf(param1);
-        get_alarm_en(M4);
-        debug_p2x_crlf(param1);
-
-        /* self test 2: get config */
-        get_config(M1);
-        debug_p2x(param1);
-        debug_p2x_crlf(param2);
-
-        /* self test 3: read write to ABS_POS */
-        param1 = 0x01;
-        param2 = 0x02;
-        param3 = 0x03;
-        set_abs_pos(M1);
-        get_abs_pos(M1);
-
-        /* read ABS_POS */
-        debug_p2x(param1);
-        debug_p2x(param2);
-        debug_p2x_crlf(param3);
-
-        /* self test 5: get status */
-        get_status(M1);
-        debug_p2x(param1);
-        debug_p2x_crlf(param2);
-
-        /* 1 seconds delay */
-        CLEAR_TOTAL_1MS_CLICK();
-        while (total_1ms_tick < 1000L/* 1 second */);
     }
 #endif
 
 #if DEBUG_SHOW_TVAL
 #warning debug show tval enabled
     for(;;){
-        /* M1 current */
-        debug_p8x_crlf(0x11111111UL);
-        get_tval(M1);
-        debug_p2x_crlf(param1);
-
-        /* M2 current */
-        debug_p8x_crlf(0x22222222UL);
-        get_tval(M2);
-        debug_p2x_crlf(param1);
-
-        /* M3 current */
-        debug_p8x_crlf(0x33333333UL);
-        get_tval(M3);
-        debug_p2x_crlf(param1);
-
-        /* M4 current */
-        debug_p8x_crlf(0x44444444UL);
-        get_tval(M4);
-        debug_p2x_crlf(param1);
     }
 #endif
 
 #if DEBUG_DEFAULT_VAL
 #warning "writing default value to eeprom is enabled"
+    /* write the default value to eeprom */
+    chksum = 0;
     for (n = 0; n < EEPROM_MAX_BYTE; n++) {
-        write_eeprom_data((unsigned char)((M1 * EEPROM_OFFSET) + n),
-                          default_value[n]);
-        write_eeprom_data((unsigned char)((M2 * EEPROM_OFFSET) + n),
-                          default_value[n]);
-        write_eeprom_data((unsigned char)((M3 * EEPROM_OFFSET) + n),
-                          default_value[n]);
-        write_eeprom_data((unsigned char)((M4 * EEPROM_OFFSET) + n),
-                          default_value[n]);
+        /* find check sum */
+        if (n == (EEPROM_MAX_BYTE - 1)){
+            chksum = (unsigned char )~chksum;
+            chksum += 1;
+            value = chksum;
+        }
+        else{
+            value = default_value[n];
+            chksum += value;
+        }
+        /* write to eeprom */
+        write_eeprom_data((unsigned char)((M1 * EEPROM_OFFSET) + n), value);
+        write_eeprom_data((unsigned char)((M2 * EEPROM_OFFSET) + n), value);
+        write_eeprom_data((unsigned char)((M3 * EEPROM_OFFSET) + n), value);
+        write_eeprom_data((unsigned char)((M4 * EEPROM_OFFSET) + n), value);
     }
 #endif
-
+    
+    /* copy eeprom value to motor driver chip */
+    for (n = M1; n <= M4; n++) {
+           copy_from_eeprom(n);
+    }
+    
     /* disable motors */
     motor_enabled = 0;
     motor_disable(M1);
     motor_disable(M2);
     motor_disable(M3);
     motor_disable(M4);
-
-    /* copy eeprom value to L6474 motor driver chip */
-    for (n = M1; n <= M4; n++) {
-        if ((!blank_check(n)) && chksum_check(n)) {
-            copy_from_eeprom(n);
-        }
-    }
-
+    
     /* initial value */
     LED_OUT = 1;
     CLEAR_DATA_BUF();
@@ -365,6 +312,16 @@ state_machine_entry:
                 }
                 /* read or write action */
                 switch (rx) {
+                    case 'E':
+                        motor_enable(M1);
+                        DoWriteHostByte(FIRMWARE_VERSION);
+                        break;
+                        
+                    case 'e':
+                        motor_disable(M1);
+                        DoWriteHostByte(FIRMWARE_VERSION);
+                        break;
+                        
                     case 'v':
                         DoWriteHostByte(FIRMWARE_VERSION);
                         break;
@@ -374,53 +331,26 @@ state_machine_entry:
                     case 'z':
                     case 'a':
                         /* read 6474 registers */
-                        /* ABS_POS */
-                        get_abs_pos(motor_unit);
-                        DoWriteHostByte(param1);
-                        DoWriteHostByte(param2);
-                        DoWriteHostByte(param3);
-                        /* EL_POS */
-                        get_el_pos(motor_unit);
-                        DoWriteHostByte(param1);
-                        DoWriteHostByte(param2);
-                        /* MARK */
-                        get_mark(motor_unit);
-                        DoWriteHostByte(param1);
-                        DoWriteHostByte(param2);
-                        DoWriteHostByte(param3);
-                        /* TVAL */
-                        get_tval(motor_unit);
-                        DoWriteHostByte(param1);
-                        /* T_FAST */
-                        get_t_fast(motor_unit);
-                        DoWriteHostByte(param1);
-                        /* TON_MIN */
-                        get_ton_min(motor_unit);
-                        DoWriteHostByte(param1);
-                        /* TOFF_MIN */
-                        get_toff_min(motor_unit);
-                        DoWriteHostByte(param1);
-                        /* ADC_OUT */
-                        get_adc_out(motor_unit);
-                        DoWriteHostByte(param1);
-                        /* OCD_TH */
-                        get_ocd_th(motor_unit);
-                        DoWriteHostByte(param1);
-                        /* STEP_MODE */
-                        get_step_mode(motor_unit);
-                        DoWriteHostByte(param1);
-                        /* ALARM_EN */
-                        get_alarm_en(motor_unit);
-                        DoWriteHostByte(param1);
-                        /* CONFIG */
-                        get_config(motor_unit);
-                        DoWriteHostByte(param1);
-                        DoWriteHostByte(param2);
-                        /* STATUS */
-                        get_status(motor_unit);
-                        DoWriteHostByte(param1);
-                        DoWriteHostByte(param2);
-                        /* CHECKSUM = 0 */
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
+                        DoWriteHostByte(0);
                         DoWriteHostByte(0);
                         break;
 
@@ -487,8 +417,6 @@ state_machine_entry:
             /* only enable the unit if the eeprom is valid */
             for (n = M1; n <= M4; n++) {
                 if ((!blank_check(n)) && chksum_check(n)) {
-                    /* reset position */
-                    reset_position(n);
                     /* enable motor */
                     motor_enable(n);
                     LED_OUT = 1;
@@ -501,17 +429,20 @@ state_machine_entry:
         }
         
         /* clear error status */
+#if (0)
         get_config(M1);
         get_config(M2);
         get_config(M3);
         get_config(M4);
+#endif
         
         /* motor enable signal, aka strobe signal is inverted */
         while (MX_ENABLE == 0) {
             
             /* bit follower */
             PORTB = PORTA;
-            
+       
+#if (0)            
             /* error detected */
             if (FLAG_N == 0){
                 ENABLE_INTERRUPT();
@@ -535,6 +466,7 @@ state_machine_entry:
                     }
                 }
             }
+#endif            
         }
         state = STATE_IDLE;
     }

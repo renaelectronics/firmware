@@ -42,7 +42,7 @@
 #define SDI_RC4             PORTCbits.RC4 /* 1, input  *//* sdi */
 #define SDO_RC5             PORTCbits.RC5 /* 0, output *//* sdo */
 #define LED_OUT             PORTCbits.RC6 /* 0, output *//* led */
-#define FLAG_N              PORTCbits.RC7 /* 1, input  *//* flag_n */
+#define UNUSED              PORTCbits.RC7 /* 1, input  *//* unused */
 
 #endif	/* IO_H */
 

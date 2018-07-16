@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Motor Driver Firmware V5.2.X LPT interface
+PROJECTNAME=Motor Driver Firmware
 
 # Active Configuration
 DEFAULTCONF=default
