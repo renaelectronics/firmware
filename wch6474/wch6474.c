@@ -25,144 +25,119 @@ void dump_motor_options(struct motor_options *p)
 	printf("---------------------------------------\n");
 	printf("             Motor Unit : %d\n", p->motor);
 	printf("          Motor Current : %f A\n", p->current);
-	printf("           PWM off Time : %f us\n", p->pwm_off);
-	printf("        Fast Decay Time : %f us\n", p->t_fast);
-	printf("         Fall Step Time : %f us\n", p->t_step);
-	printf("        Minimum On Time : %f us\n", p->ton_min);
-	printf("       Minimum Off Time : %f us\n", p->toff_min);
-	printf(" Over Current Threshold : %f A\n", p->ocd_th);
-	printf("              Step Mode : %d\n", p->step_mode);
+	printf("             Microsteps : %d\n", p->microsteps);
+	printf("   Pulse multiplication : %d\n", p->pulse_multi);
+	printf("        Slow Decay Time : %d \n", p->slow_decay_time);
+	printf("        Fast Decay Time : %d \n", p->chopconf_p3.fast_decay_time);
+	printf("       Sine Wave Offset : %d \n", p->chopconf_p2.sine_wave_offset);
 	printf("---------------------------------------\n");
+}
+
+int outof_range_float(char *message, float value, float min, float max)
+{
+	if ((value < min) || (value > max)){
+		printf("%s out of range, must be between %f to %f, ",
+			message, min, max);
+		return 1;
+	}
+	return 0;
+}
+
+int outof_range(char *message, int value, int min, int max)
+{
+	if ((value < min) || (value > max)){
+		printf("%s out of range, must be between %d to %d, ",
+			message, min, max);
+		return 1;
+	}
+	return 0;
+}
+
+int not_powerof_2(char *message, int value, int min, int max)
+{
+	int n;
+	int count = 0;
+
+	if (outof_range(message, value, min, max))
+		return 1;
+	for (n=0;n<32;n++){
+		if (value & (1<<n))
+			count++;
+		if (count>1){
+			printf("%s, must be power of 2, ", message);
+			return 1;
+		}
+	}
+	return 0;
 }
 
 int options_check(int argc, char **argv, struct motor_options *p)
 {
 	int rc = 1;
 
-	if ((p->motor < 0) || (p->motor > 3)){
-		printf("Invalid motor unit %d, ",
-			p->motor);
+	if (outof_range("Motor unit", p->motor, 0, 3))
 		rc = 0;
-	}
-	else if ((p->current <= 0.0) || (p->current > 4.0)){
-		printf("Invalid motor current %fA, ",
-			p->current);
+	else if (outof_range_float("Motor current", p->current, 0.097, 2.034))
 		rc = 0;
-	}
-	else if ((p->ocd_th <= 0.0) || (p->ocd_th > 6.0)){
-		printf("Invalid overcurrent detection %fA, ",
-			p->ocd_th);
+	/* nominal slow deay time is 20us, ie register value of 9 */
+	else if (outof_range("Slow decay time", p->slow_decay_time, -7, 6))
 		rc = 0;
-	}
-	else if ((p->pwm_off < 4.0) || (p->pwm_off > 124.0)){
-		printf("Invalid pwm_off value %fus, must be between 4 to 124, ",
-			p->pwm_off);
+	/* nominal fast decay time is 20us, ie register value of 9 */
+	else if (outof_range("Fast decay time", p->chopconf_p3.fast_decay_time, -7, 6))
 		rc = 0;
-	}
-	else if ((p->t_fast < 2.0) || (p->t_fast > 32.0)){
-		printf("Invalid t_fast value %fus, must be between 2 to 32, ",
-			p->t_fast);
+	/* nominal sine wave offset is 0 ie register value of 3 */	
+	else if (outof_range("Fast decay time", p->chopconf_p2.sine_wave_offset, -3, 9))
 		rc = 0;
-	}
-	else if ((p->t_step < 2.0) || (p->t_step > 32.0)){
-		printf("Invalid t_step value %fus, must be between 2 to 32, ",
-			p->t_step);
+	else if (outof_range("Microsteps can only be 1,2,4,8,16,32,64,128,256",
+			 	p->microsteps, 1, 256))
 		rc = 0;
-	}
-	else if ((p->ton_min < 0.5) || (p->ton_min > 64.0)){
-		printf("Invalid ton_min value %fus, must be between 0.5 to 64, ",
-			p->ton_min);
-		rc = 0;
-	}
-	else if ((p->toff_min < 0.5) || (p->toff_min > 64.0)){
-		printf("Invalid toff_min value %fus, must be between 2us to 32us, ",
-			p->toff_min);
-		rc = 0;
-	}
 
 	if (rc == 0){
 		printf("use following command for help.\n\n");
 		printf("\t%s --help\n\n", argv[0]);
 	}
 
-	/* current, resolution 31.25mA */
-	p->current = (int)(p->current / 0.03125) * 0.03125;
-
-	/* overcurrent, resolution 375mA */
-	p->ocd_th = (int)(p->ocd_th / 0.375) * 0.375;
+	/* current, resolution 0.097 ie register 0 = 0.097A */
+	p->current = (int)(p->current / 0.097)-1;
+	if (p->current < 0) 
+		p->current = 0;
 
 	return rc;
 }
 
 /*
- * prepare buffer
+ * convert the options into register value and package
+ * it into a datagram. Add checksum at the end
  */
 void options_to_buf(struct motor_options *p, char *pbuf)
 {
-	int n,m;
+	int n;
 	int checksum;
 
-	/* EEPROM_ABS_POS */
-	pbuf[EEPROM_ABS_POS + 0] = 0x00;
-	pbuf[EEPROM_ABS_POS + 1] = 0x00;
-	pbuf[EEPROM_ABS_POS + 2] = 0x00;
+	/* EEPROM_DRVCONF */
+	pbuf[EEPROM_DRVCONF + 0] = 0x00;
+	pbuf[EEPROM_DRVCONF + 1] = 0x00;
+	pbuf[EEPROM_DRVCONF + 2] = 0x00;
 
-	/* EEPROM_EL_POS */
-	pbuf[EEPROM_EL_POS + 0] = 0x00;
-	pbuf[EEPROM_EL_POS + 1] = 0x00;
+	/* EEPROM_SGCSCONF */
+	pbuf[EEPROM_SGCSCONF + 0] = 0x00;
+	pbuf[EEPROM_SGCSCONF + 1] = 0x00;
+	pbuf[EEPROM_SGCSCONF + 2] = 0x00;
 
-	/* EEPROM_MARK */
-	pbuf[EEPROM_MARK + 0] = 0x00;
-	pbuf[EEPROM_MARK + 1] = 0x00;
-	pbuf[EEPROM_MARK + 2] = 0x00;
+	/* EEPROM_SMARTEN */
+	pbuf[EEPROM_SMARTEN + 0] = 0x00;
+	pbuf[EEPROM_SMARTEN + 1] = 0x00;
+	pbuf[EEPROM_SMARTEN + 2] = 0x00;
 
-	/* EEPROM_TVAL */
-	n = p->current / 0.03125;
-	n = n - 1;
-	if (n < 0)
-		n = 0;
-	pbuf[EEPROM_TVAL] = (n & 0xff);
+	/* EEPROM_CHOPCONF */
+	pbuf[EEPROM_CHOPCONF + 0] = 0x00;
+	pbuf[EEPROM_CHOPCONF + 1] = 0x00;
+	pbuf[EEPROM_CHOPCONF + 2] = 0x00;
 
-	/* EEPROM_T_FAST */
-	n = p->t_fast / 2.0;
-	n = (n - 1) & 0xf;
-	m = p->t_step / 2.0;
-	m = (m - 1) & 0xf;
-	pbuf[EEPROM_T_FAST] = (n<<4) | m;
-
-	/* EEPROM_TON_MIN */
-	n = p->ton_min / 0.5;
-	n = (n - 1) & 0x7f;
-	pbuf[EEPROM_TON_MIN] = n;
-
-	/* EEPROM_TOFF_MIN */
-	n = p->toff_min / 0.5;
-	n = (n - 1) & 0x7f;
-	pbuf[EEPROM_TOFF_MIN] = n;
-
-	/* EEPROM_ADC_OUT */
-	pbuf[EEPROM_ADC_OUT] = 0x00;
-
-	/* EEPROM_OCD_TH */
-	n = p->ocd_th / 0.375;
-	pbuf[EEPROM_OCD_TH] =  n & 0xff;
-
-	/* EEPROM_STEP_MODE, bit7,3 must be 1 */
-	pbuf[EEPROM_STEP_MODE] = 0x88 | p->step_mode;
-
-	/* EEPROM_ALARM_EN */
-	/* overcurrent, thermal shutdown, thermal warning, under voltage*/
-	pbuf[EEPROM_ALARM_EN] = 0x0f;
-
-	/* EEPROM_CONFIG: TOFF[14:10]=pwm_off POW_SR[9:8]=0x02 */
-	n = p->pwm_off / 4.0;
-	n = n & 0x1f;
-	pbuf[EEPROM_CONFIG + 0] = (n << 2) | 0x02;
-	pbuf[EEPROM_CONFIG + 1] = 0x88;
-
-	/* EEPROM_STATUS*/
-	pbuf[EEPROM_STATUS + 0] = 0x00;
-	pbuf[EEPROM_STATUS + 1] = 0x00;
+	/* EEPROM_DRVCTRL */
+	pbuf[EEPROM_DRVCTRL + 0] = 0x00;
+	pbuf[EEPROM_DRVCTRL + 1] = 0x00;
+	pbuf[EEPROM_DRVCTRL + 2] = 0x00;
 
 	/* EEPROM_CHECK_SUM */
 	pbuf[EEPROM_CHECK_SUM] = 0x00;
@@ -185,24 +160,19 @@ int main(int argc, char **argv)
 	int fd;
 	int n;
 
-	/* set default and parse options,
-	 * refer to L6474 datasheet,
-	 * Doc ID 022529 Rev 3
-	 */
 	memset(&p, 0, sizeof(struct motor_options));
 	strcpy(p.parport, "/dev/parport0");
 	p.motor = 0;
 	p.version = 0;
-	p.current = 0.03125;
-	p.pwm_off = 44.0;
-	p.t_fast = 2.0;
-	p.t_step = 18.0;;
-	p.ton_min = 21.0;
-	p.toff_min = 21.0;
-	p.ocd_th = 8 * 0.375;
-	p.step_mode = 0;/* default to full step */
-	p.readinfo = 0;
-	p.console = 0;
+	p.current = 0.097;
+	p.pulse_multi = 0;
+	p.microsteps = 1;
+	p.chopper_mode = 1; /* constant TOFF mode */
+	p.random_toff = 0;
+	p.chopconf_p1.fast_decay_mode = 0;
+	p.chopconf_p2.sine_wave_offset = 0;
+	p.chopconf_p3.fast_decay_time = 0;
+	p.slow_decay_time = 0;
 
 	if (!get_motor_options(argc, argv, &p)){
 		exit(0);
