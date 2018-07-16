@@ -88,7 +88,7 @@ int options_check(int argc, char **argv, struct motor_options *p)
 	/* nominal sine wave offset is 0 ie register value of 3 */	
 	else if (outof_range("Fast decay time", p->chopconf_p2.sine_wave_offset, -3, 9))
 		rc = 0;
-	else if (outof_range("Microsteps can only be 1,2,4,8,16,32,64,128,256",
+	else if (not_powerof_2("Microsteps can only be 1,2,4,8,16,32,64,128,256",
 			 	p->microsteps, 1, 256))
 		rc = 0;
 

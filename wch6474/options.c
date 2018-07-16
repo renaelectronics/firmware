@@ -51,6 +51,7 @@ static void print_usage(int argc, char **argv){
 	printf("    -o, --t_offset     sinewave offset\n");
 	printf("    -s, --microsteps   1,2,4,8,16,32,64,128,256 microsteps\n");
 	printf("    -e, --pulse_multi  enable step pulse multiplication by 16\n");
+	printf("    -d, --random_toff  enable random slow decay\n");
 	printf("\n");
 }
 
@@ -80,13 +81,14 @@ int get_motor_options(int argc, char **argv, struct motor_options *p)
 			{"t_offset", required_argument, 0, 'o'},
 			{"microsteps", required_argument, 0, 's'},
 			{"pulse_multi", no_argument, 0, 'e'},
+			{"random_toff", no_argument, 0, 'd'},
 			{0, 0, 0, 0}
 		};
 
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "avezrhxp:m:c:w:t:o:s:", long_options, &option_index);
+		c = getopt_long (argc, argv, "avezrhxdp:m:c:w:t:o:s:", long_options, &option_index);
 
 		/* Detect the end of the options. */
 		if (c == -1)
@@ -152,6 +154,9 @@ int get_motor_options(int argc, char **argv, struct motor_options *p)
 				break;
 			case 'e':
 				p->pulse_multi = 1;
+				break;
+			case 'd':
+				p->random_toff = 1;
 				break;
 			case '?':
 				/* getopt_long already printed an error message. */
