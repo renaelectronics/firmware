@@ -36,7 +36,7 @@ void dump_motor_options(struct motor_options *p)
 int outof_range_float(char *message, float value, float min, float max)
 {
 	if ((value < min) || (value > max)){
-		printf("%s out of range, must be between %f to %f, ",
+		printf("%s must be between %f to %f.\n",
 			message, min, max);
 		return 1;
 	}
@@ -46,7 +46,7 @@ int outof_range_float(char *message, float value, float min, float max)
 int outof_range(char *message, int value, int min, int max)
 {
 	if ((value < min) || (value > max)){
-		printf("%s out of range, must be between %d to %d, ",
+		printf("%s must be between %d to %d.\n",
 			message, min, max);
 		return 1;
 	}
@@ -64,7 +64,7 @@ int not_powerof_2(char *message, int value, int min, int max)
 		if (value & (1<<n))
 			count++;
 		if (count>1){
-			printf("%s, must be power of 2, ", message);
+			printf("%s must be power of 2.\n", message);
 			return 1;
 		}
 	}
@@ -93,7 +93,7 @@ int options_check(int argc, char **argv, struct motor_options *p)
 		rc = 0;
 
 	if (rc == 0){
-		printf("use following command for help.\n\n");
+		printf("Use following command for help.\n\n");
 		printf("\t%s --help\n\n", argv[0]);
 	}
 
@@ -182,9 +182,14 @@ void options_to_buf(struct motor_options *p, char *pbuf)
 	pbuf[EEPROM_CHOPCONF + 2] = (value32 & 0x0000ff);
 
 	/* EEPROM_DRVCTRL */
+	/* convert microsteps to register value */
+	for (n=0;n<=8;n++){
+		if (p->microsteps & (1<<n))
+			break;
+	}
 	value32 = 0x000000 |
 		((p->pulse_multi & 1) << 9) |
-		(p->microsteps & 0xf);
+		((8-n) & 0xf);
 	pbuf[EEPROM_DRVCTRL + 0] = (value32 & 0x0f0000) >> 16;
 	pbuf[EEPROM_DRVCTRL + 1] = (value32 & 0x00ff00) >> 8;
 	pbuf[EEPROM_DRVCTRL + 2] = (value32 & 0x0000ff);
