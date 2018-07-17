@@ -111,33 +111,83 @@ int options_check(int argc, char **argv, struct motor_options *p)
  */
 void options_to_buf(struct motor_options *p, char *pbuf)
 {
-	int n;
+	unsigned int n;
 	int checksum;
+	unsigned int value32;
 
-	/* EEPROM_DRVCONF */
-	pbuf[EEPROM_DRVCONF + 0] = 0x00;
-	pbuf[EEPROM_DRVCONF + 1] = 0x00;
-	pbuf[EEPROM_DRVCONF + 2] = 0x00;
+	/* EEPROM_DRVCONF, mask the bit size and shift */
+	value32 = 0x0e0000 |
+		((p->mosfet_hi_slope & 3) << 14) | 
+		((p->mosfet_lo_slope & 3) << 12) |
+		((p->short_dectect_timer & 3) << 8) |
+		((p->step_dir_disable & 1) << 7) |
+		((p->sense_voltage & 3) << 6)    |
+		((p->read_selection & 3) << 4);
+	pbuf[EEPROM_DRVCONF + 0] = (value32 & 0x0f0000) >> 16;
+	pbuf[EEPROM_DRVCONF + 1] = (value32 & 0x00ff00) >> 8;
+	pbuf[EEPROM_DRVCONF + 2] = (value32 & 0x0000ff);
 
 	/* EEPROM_SGCSCONF */
-	pbuf[EEPROM_SGCSCONF + 0] = 0x00;
-	pbuf[EEPROM_SGCSCONF + 1] = 0x00;
-	pbuf[EEPROM_SGCSCONF + 2] = 0x00;
+	n = abs((unsigned int)(p->current / 0.097) - 1);
+	value32 = 0x0c0000 |
+		((p->stallGuard_filter & 1) << 16) |
+		((p->stallGuard_thres & 1) << 8) |
+		(n & 0x1f);
+	pbuf[EEPROM_SGCSCONF + 0] = (value32 & 0x0f0000) >> 16;
+	pbuf[EEPROM_SGCSCONF + 1] = (value32 & 0x00ff00) >> 8;
+	pbuf[EEPROM_SGCSCONF + 2] = (value32 & 0x0000ff);
 
 	/* EEPROM_SMARTEN */
-	pbuf[EEPROM_SMARTEN + 0] = 0x00;
-	pbuf[EEPROM_SMARTEN + 1] = 0x00;
-	pbuf[EEPROM_SMARTEN + 2] = 0x00;
+	value32 = 0x0a0000 |
+		((p->coolstep_min_cur & 1) << 15) |
+		((p->coolstep_dec_speed & 3) << 13) |
+		((p->coolstep_upper_thres & 0xf) << 8) |
+		((p->coolstep_inc_size & 3) << 5) |
+		(p->coolstep_lower_thres & 0xf);
+	pbuf[EEPROM_SMARTEN + 0] = (value32 & 0x0f0000) >> 16;
+	pbuf[EEPROM_SMARTEN + 1] = (value32 & 0x00ff00) >> 8;
+	pbuf[EEPROM_SMARTEN + 2] = (value32 & 0x0000ff);
 
 	/* EEPROM_CHOPCONF */
-	pbuf[EEPROM_CHOPCONF + 0] = 0x00;
-	pbuf[EEPROM_CHOPCONF + 1] = 0x00;
-	pbuf[EEPROM_CHOPCONF + 2] = 0x00;
+	value32	= 0x080000 |
+		((p->blanking_time & 3) << 15) |
+		((p->chopper_mode & 1) << 14) |
+		((p->random_toff & 1) <<13);
+	if (p->chopper_mode == 0) {
+		/* spreadCycle mode */
+		value32 = value32 |
+			((p->chopconf_p1.hysteresis_dec & 3) << 11) |
+			((p->chopconf_p2.hyteresis_end & 0xf) << 7) |
+			((p->chopconf_p3.hysteresis_start & 0xf) << 4);
+	}
+	else {
+		/* constant toff mode */
+		/* nominal fast decay time is 20 us, ie register value of 9 */
+		n = (p->chopconf_p3.fast_decay_time + 9);
+		/* constant toff mode */
+		value32 = value32 |
+			/* hdec1 current comparator can terminate fast decay phase */
+			((p->chopconf_p1.fast_decay_mode.hdec1 & 1) << 12) |
+			/* hdec0: MSB of fast decay timer */
+			(((n & 0x8) >> 3) << 11) |
+			/* nominal sine wave offset is 0, ie register value of 3 */
+			(((p->chopconf_p2.sine_wave_offset & 0xf) + 3) << 7) |
+			/* last 3 bits of fast decay timer */
+			((n & 7) << 4);
+	}
+	/* nominal slow decay time is 20us, ie register value of 9 */
+	value32 |= p->slow_decay_time + 9;
+	pbuf[EEPROM_CHOPCONF + 0] = (value32 & 0x0f0000) >> 16;
+	pbuf[EEPROM_CHOPCONF + 1] = (value32 & 0x00ff00) >> 8;
+	pbuf[EEPROM_CHOPCONF + 2] = (value32 & 0x0000ff);
 
 	/* EEPROM_DRVCTRL */
-	pbuf[EEPROM_DRVCTRL + 0] = 0x00;
-	pbuf[EEPROM_DRVCTRL + 1] = 0x00;
-	pbuf[EEPROM_DRVCTRL + 2] = 0x00;
+	value32 = 0x000000 |
+		((p->pulse_multi & 1) << 9) |
+		(p->microsteps & 0xf);
+	pbuf[EEPROM_DRVCTRL + 0] = (value32 & 0x0f0000) >> 16;
+	pbuf[EEPROM_DRVCTRL + 1] = (value32 & 0x00ff00) >> 8;
+	pbuf[EEPROM_DRVCTRL + 2] = (value32 & 0x0000ff);
 
 	/* EEPROM_CHECK_SUM */
 	pbuf[EEPROM_CHECK_SUM] = 0x00;
@@ -169,7 +219,7 @@ int main(int argc, char **argv)
 	p.microsteps = 1;
 	p.chopper_mode = 1; /* constant TOFF mode */
 	p.random_toff = 0;
-	p.chopconf_p1.fast_decay_mode = 0;
+	p.chopconf_p1.fast_decay_mode.hdec1 = 0; 
 	p.chopconf_p2.sine_wave_offset = 0;
 	p.chopconf_p3.fast_decay_time = 0;
 	p.slow_decay_time = 0;
@@ -245,7 +295,15 @@ int main(int argc, char **argv)
 		fflush(stdout);
 		goto out;
 	}
-		
+	
+
+	/* prepare data */
+	memset(data, 0, EEPROM_MAX_BYTE);
+	options_to_buf(&p, data);
+	dump_data(data, EEPROM_MAX_BYTE);
+	return;
+
+
 	/* write and read device info */
 	if (!p.readinfo){
 

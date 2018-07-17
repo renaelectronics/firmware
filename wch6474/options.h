@@ -8,13 +8,18 @@ struct motor_options{
 	int version;
 	/* Driver Control Register, DRVCTRL */
 	int pulse_multi;	/* step interpolation */
+	int double_edge;	/* double edge */
 	int microsteps;		/* microstep resolution */
 	/* Chopper Control Register, CHOPCONF */
+	int blanking_time;
 	int chopper_mode; 	/* auto fast decay */
 	int random_toff;	/* random TOFF */
 	union {
-		int hysteresis_dec;/* HDEC */
-		int fast_decay_mode;
+		int hysteresis_dec; 	/* HDEC */
+		union {
+			int hdec1;
+			int hdec0;
+		} fast_decay_mode;
 	} chopconf_p1;
 	union {
 		int hyteresis_end;	/* HEND */
@@ -30,6 +35,7 @@ struct motor_options{
 	int coolstep_min_cur;		/* SEIMIN */
 	int coolstep_dec_speed;		/* SEND */
 	int coolstep_upper_thres;	/* SEMAX */
+	int coolstep_inc_size;		/* SEUP */
 	int coolstep_lower_thres;	/* SEMIN */
 	/* stallGuard2 Control Reigster, SGCSCONF */
 	int stallGuard_filter;		/* SFILT */
