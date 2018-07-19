@@ -7,34 +7,31 @@
 
 /* Flag set by --verbose */
 static int verbose_flag;
-
 static void print_example(int argc, char **argv){
 	printf("\n");
 	printf("EXAMPLE: \n");
 	printf("\n");
-	printf("    %s --port /dev/parport0  --motor 1 --current 2.0 --step_mode 16 --ocd_th 3\n", argv[0]);
+	printf("    %s --port /dev/parport0  --motor 1 --current 1.0 --microsteps 16\n", argv[0]);
 	printf("\n");
 	printf("    Use parallel port /dev/parport0 to configure motor\n");
-	printf("    with drive current to 2.0A, step mode to 16 steps and\n");
-	printf("    over detection current detection to 3A\n");
+	printf("    with drive current to 1.0A, 16 microsteps and\n");
 	printf("\n");
 	printf("SHORT HAND EXAMPLE:\n");
 	printf("\n");
-	printf("    %s -p /dev/parport0 -m 1 -c 2.0 -s 16 -d 3\n", argv[0]);
+	printf("    %s -p /dev/parport0 -m 1 -c 1.0 -s 16\n", argv[0]);
 	printf("\n");
 	printf("    Use serial port /dev/parport0 to configure motor\n");
-	printf("    with drive current to 2.0A, step mode to 16 steps and\n");
-	printf("    over detection current detection to 3A\n");
+	printf("    with drive current to 1.0A, 16 microsteps\n");
 	printf("\n");
 }
 
 static void print_usage(int argc, char **argv){
 	printf("\n");
-	printf("EXAMPLE: %s --motor 0 --current 2.0\n", argv[0]);
-	printf("    Set motor 0 with max drive current of 2A\n");
+	printf("EXAMPLE: %s --motor 0 --current 1.0\n", argv[0]);
+	printf("    Set motor 0 with max drive current of 1A\n");
 	printf("\n");
- 	printf("SHORT HAND EXAMPLE: %s -m 0 -c 2.0\n", argv[0]);
-	printf("    Set motor 0 with max drive current of 2A\n");
+ 	printf("SHORT HAND EXAMPLE: %s -m 0 -c 1.0\n", argv[0]);
+	printf("    Set motor 0 with max drive current of 1A\n");
 	printf("\n");
 	printf("DETAIL USAGE: %s [OPTION...] \n", argv[0]);
 	printf("\n");
@@ -48,14 +45,13 @@ static void print_usage(int argc, char **argv){
 	printf("    -p, --device       parport port device name, default is /dev/parport0\n");
 	printf("    -m, --motor        motor unit\n");
 	printf("    -r, --read         read motor setting information\n");
-	printf("    -c, --curent       drive current, 0.03125 to 4.00 (A)\n");
-	printf("    -w, --pwm_off      PWM off time, 4.0 to 124.0 (usec)\n");
-	printf("    -t, --t_fast       fast decay time, 2.0 to 32.0 (usec)\n");
-	printf("    -e, --t_step       fall step time, 2.0 to 32.0 (usec)\n");
-	printf("    -o, --ton_min      minimum on time, 0.5 to 64.0 (usec)\n");
-	printf("    -f, --toff_min     minimum off time, 0.5 to 64.0 (usec)\n");
-	printf("    -t, --ocd_th       over current detection threshold\n");
-	printf("    -s, --step_mode    0=full, 1=half, 2=1/4 step, 3=1/8 step, 4=1/16 step\n");
+	printf("    -c, --curent       drive current, 0.097 to 2.034 (A)\n");
+	printf("    -w, --t_off        PWM off time setting\n");
+	printf("    -t, --t_fast       fast decay time\n");
+	printf("    -o, --t_offset     sinewave offset\n");
+	printf("    -s, --microsteps   1,2,4,8,16,32,64,128,256 microsteps\n");
+	printf("    -e, --pulse_multi  enable step pulse multiplication by 16\n");
+	printf("    -d, --random_toff  enable random slow decay\n");
 	printf("\n");
 }
 
@@ -80,20 +76,19 @@ int get_motor_options(int argc, char **argv, struct motor_options *p)
 			{"motor", required_argument, 0, 'm'},
 			{"read", no_argument, 0, 'r'},
 			{"current", required_argument, 0, 'c'},
-			{"pwm_off", required_argument, 0, 'w'},
+			{"t_off", required_argument, 0, 'w'},
 			{"t_fast", required_argument, 0, 't'},
-			{"t_step", required_argument, 0, 'e'},
-			{"ton_min", required_argument, 0, 'o'},
-			{"toff_min", required_argument, 0, 'f'},
-			{"ocd_th", required_argument, 0, 'd'},
-			{"step_mode", required_argument, 0, 's'},
+			{"t_offset", required_argument, 0, 'o'},
+			{"microsteps", required_argument, 0, 's'},
+			{"pulse_multi", no_argument, 0, 'e'},
+			{"random_toff", no_argument, 0, 'd'},
 			{0, 0, 0, 0}
 		};
 
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "avzrhxp:m:c:w:t:e:o:f:d:s:", long_options, &option_index);
+		c = getopt_long (argc, argv, "avezrhxdp:m:c:w:t:o:s:", long_options, &option_index);
 
 		/* Detect the end of the options. */
 		if (c == -1)
@@ -111,72 +106,58 @@ int get_motor_options(int argc, char **argv, struct motor_options *p)
 				return 0;
 				break;
 
-			case 'a':
-				p->strobe = 1;
-				break;
-
-			case 'z':
-				p->console = 1;
-				break;
-
-			case 'v':
-				p->version = 1;
-				break;
-
 			case 'h':
 				print_usage(argc, argv);
 				return 0;
 				break;
-
 			case 'x':
 				print_example(argc, argv);
 				return 0;
 				break;
-
+			case 'z':
+				p->console = 1;
+				break;
+			case 'a':
+				p->strobe = 1;
+				break;
+			case 'v':
+				p->version = 1;
+				break;
 			case 'p':
 				strcpy(p->parport, optarg);
 				break;
-
 			case 'm':
 				/* strtol will return 0 if the optarg is invalid */
 				p->motor = strtol(optarg, &endptr, 10);
 				break;
-
 			case 'r':
 				p->readinfo = 1;
 				break;
-
 			case 'c':
 				p->current = atof(optarg);
 				break;
 			case 'w':
-				p->pwm_off = atof(optarg);
+				/* strtol will return 0 if the optarg is invalid */
+				p->slow_decay_time = strtol(optarg, &endptr, 10);
 				break;
-
 			case 't':
-				p->t_fast = atof(optarg);
+				/* strtol will return 0 if the optarg is invalid */
+				p->chopconf_p3.fast_decay_time = strtol(optarg, &endptr, 10);
 				break;
-
-			case 'e':
-				p->t_step = atof(optarg);
-				break;
-
 			case 'o':
-				p->ton_min = atof(optarg);
+				/* strtol will return 0 if the optarg is invalid */
+				p->chopconf_p2.sine_wave_offset = strtol(optarg, &endptr, 10);
 				break;
-
-			case 'f':
-				p->toff_min = atof(optarg);
-				break;
-
-			case 'd':
-				p->ocd_th = atof(optarg);
-				break;
-
 			case 's':
-				p->step_mode = strtol(optarg, &endptr, 10);
+				/* strtol will return 0 if the optarg is invalid */
+				p->microsteps = strtol(optarg, &endptr, 10);
 				break;
-
+			case 'e':
+				p->pulse_multi = 1;
+				break;
+			case 'd':
+				p->random_toff = 1;
+				break;
 			case '?':
 				/* getopt_long already printed an error message. */
 				break;
