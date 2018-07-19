@@ -86,13 +86,23 @@ unsigned char debug_value;
 
 #if DEBUG_DEFAULT_VAL
 #warning "default motor value is enabled"
+#if (0) /* working eeprom */
 unsigned char default_value[EEPROM_MAX_BYTE] = {
     0x0e, 0x00, 0x00, /* drvconf */
     0x0c, 0x00, 0x03, /* sgcsconf */
     0x0a, 0x00, 0x00, /* smarten */
     0x09, 0xc1, 0x87, /* chopconf */
     0x00, 0x00, 0x08, /* drvctrl */
-    0x00              /* checksum, to be filled in */
+    0x00 /* checksum, to be filled in */
+};
+#endif
+unsigned char default_value[EEPROM_MAX_BYTE] = {
+    0x0e, 0x00, 0x00, /* drvconf */
+    0x0c, 0x00, 0x0a, /* sgcsconf */
+    0x0a, 0x00, 0x00, /* smarten */
+    0x08, 0x00, 0x00, /* chopconf */
+    0x00, 0x00, 0x08, /* drvctrl */
+    0x00 /* checksum, to be filled in */
 };
 #endif
 
@@ -160,21 +170,21 @@ void main(void) {
 
     PORTB = PORTB_INIT_VALUE;
     TRISB = PORTB_TRISB;
-    
+
     PORTC = PORTC_INIT_VALUE;
     TRISC = PORTC_TRISC;
-   
+
     /*
      * Global interrupt enable and peripheral interrupt
      */
     ENABLE_INTERRUPT();
-        
+
 #if DEBUG_BLINK
 #warning debug led blink enabled
-    for(;;){
+    for (;;) {
         CLEAR_TOTAL_1MS_CLICK();
         while (total_1ms_tick < 1000L/* 1 second */);
-        LED_OUT = (unsigned char)~LED_OUT;
+        LED_OUT = (unsigned char) ~LED_OUT;
     }
 #endif        
 
@@ -186,7 +196,7 @@ void main(void) {
         DoWriteHostByte('0');
     }
 #endif
-    
+
     /*
      * pause for hardware to become stable
      */
@@ -198,10 +208,10 @@ void main(void) {
      */
     /* set motor CS to hi */
     CS_N = 1;
-    
+
     /* Powerup delay for the 12V to be stable */
     for (n = 0; n < POWERUP_DELAY_SEC; n++) {
-        LED_OUT = (unsigned char)~LED_OUT;
+        LED_OUT = (unsigned char) ~LED_OUT;
         CLEAR_TOTAL_1MS_CLICK();
         while (total_1ms_tick < 1000L/* 1 second */);
     }
@@ -223,7 +233,7 @@ void main(void) {
 
 #if DEBUG_SHOW_TVAL
 #warning debug show tval enabled
-    for(;;){
+    for (;;) {
     }
 #endif
 
@@ -233,35 +243,34 @@ void main(void) {
     chksum = 0;
     for (n = 0; n < EEPROM_MAX_BYTE; n++) {
         /* find check sum */
-        if (n == (EEPROM_MAX_BYTE - 1)){
-            chksum = (unsigned char )~chksum;
+        if (n == (EEPROM_MAX_BYTE - 1)) {
+            chksum = (unsigned char) ~chksum;
             chksum += 1;
             value = chksum;
-        }
-        else{
+        } else {
             value = default_value[n];
             chksum += value;
         }
         /* write to eeprom */
-        write_eeprom_data((unsigned char)((M1 * EEPROM_OFFSET) + n), value);
-        write_eeprom_data((unsigned char)((M2 * EEPROM_OFFSET) + n), value);
-        write_eeprom_data((unsigned char)((M3 * EEPROM_OFFSET) + n), value);
-        write_eeprom_data((unsigned char)((M4 * EEPROM_OFFSET) + n), value);
+        write_eeprom_data((unsigned char) ((M1 * EEPROM_OFFSET) + n), value);
+        write_eeprom_data((unsigned char) ((M2 * EEPROM_OFFSET) + n), value);
+        write_eeprom_data((unsigned char) ((M3 * EEPROM_OFFSET) + n), value);
+        write_eeprom_data((unsigned char) ((M4 * EEPROM_OFFSET) + n), value);
     }
 #endif
-    
+
     /* copy eeprom value to motor driver chip */
     for (n = M1; n <= M4; n++) {
-           copy_from_eeprom(n);
+        copy_from_eeprom(n);
     }
-    
+
     /* disable motors */
     motor_enabled = 0;
     motor_disable(M1);
     motor_disable(M2);
     motor_disable(M3);
     motor_disable(M4);
-    
+
     /* initial value */
     LED_OUT = 1;
     CLEAR_DATA_BUF();
@@ -288,10 +297,10 @@ state_machine_entry:
         /* receive character and go into state machine */
         if (DoReadHostByte(&rx) == 0)
             goto state_machine_entry;
-                
+
         switch (state) {
             case STATE_IDLE:
-                /* prepare offset */
+                /* prepare motor unit offset */
                 switch (rx) {
                     case 'x':
                     case 'X':
@@ -312,16 +321,6 @@ state_machine_entry:
                 }
                 /* read or write action */
                 switch (rx) {
-                    case 'E':
-                        motor_enable(M1);
-                        DoWriteHostByte(FIRMWARE_VERSION);
-                        break;
-                        
-                    case 'e':
-                        motor_disable(M1);
-                        DoWriteHostByte(FIRMWARE_VERSION);
-                        break;
-                        
                     case 'v':
                         DoWriteHostByte(FIRMWARE_VERSION);
                         break;
@@ -330,28 +329,12 @@ state_machine_entry:
                     case 'y':
                     case 'z':
                     case 'a':
-                        /* read 6474 registers */
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
-                        DoWriteHostByte(0);
+                        /* read eeprom registers value */
+                        eeprom_offset = get_eeprom_offset(motor_unit);
+                        for (n = 0; n < EEPROM_MAX_BYTE; n++) {
+                            value = read_eeprom_data((unsigned char) (eeprom_offset + n));
+                            DoWriteHostByte(value);
+                        }
                         break;
 
                     case 'X':
@@ -378,24 +361,11 @@ state_machine_entry:
                     /* check sum */
                     if (chksum == 0) {
                         /* find eeprom offset */
-                        switch (motor_unit) {
-                            case M1:
-                                eeprom_offset = M1 * EEPROM_OFFSET;
-                                break;
-                            case M2:
-                                eeprom_offset = M2 * EEPROM_OFFSET;
-                                break;
-                            case M3:
-                                eeprom_offset = M3 * EEPROM_OFFSET;
-                                break;
-                            case M4:
-                                eeprom_offset = M4 * EEPROM_OFFSET;
-                                break;
-                        }
+                        eeprom_offset = get_eeprom_offset(motor_unit);
                         /* write all words to EEPROM */
                         for (n = 0; n < EEPROM_MAX_BYTE; n++) {
-                            write_eeprom_data((unsigned char)(eeprom_offset + n),
-                                               rx_packet[n]);
+                            write_eeprom_data((unsigned char) (eeprom_offset + n),
+                                    rx_packet[n]);
                         }
                         /* copy eeprom data to 6474 */
                         copy_from_eeprom(motor_unit);
@@ -427,7 +397,7 @@ state_machine_entry:
             PORTB = PORTA;
             LED_OUT = 0;
         }
-        
+
         /* clear error status */
 #if (0)
         get_config(M1);
@@ -435,16 +405,16 @@ state_machine_entry:
         get_config(M3);
         get_config(M4);
 #endif
-        
+
         /* motor enable signal, aka strobe signal is inverted */
         while (MX_ENABLE == 0) {
-            
+
             /* bit follower */
             PORTB = PORTA;
-       
+
 #if (0)            
             /* error detected */
-            if (FLAG_N == 0){
+            if (FLAG_N == 0) {
                 ENABLE_INTERRUPT();
                 CLEAR_TOTAL_1MS_CLICK();
                 /* disable motor */
@@ -456,11 +426,11 @@ state_machine_entry:
                 state = STATE_IDLE;
                 /* blink LED */
                 for (;;) {
-                    LED_OUT = (unsigned char)~LED_OUT;
+                    LED_OUT = (unsigned char) ~LED_OUT;
                     CLEAR_TOTAL_1MS_CLICK();
                     while (total_1ms_tick < 300L/* 0.3 second */);
                     /* motor enable signal, aka strobe signal is inverted */
-                    if (MX_ENABLE == 1){
+                    if (MX_ENABLE == 1) {
                         LED_OUT = 1;
                         break;
                     }
