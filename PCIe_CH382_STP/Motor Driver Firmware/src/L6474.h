@@ -50,7 +50,5 @@ void copy_from_eeprom(char unit);
 unsigned char blank_check(char unit);
 unsigned char chksum_check(char unit);
 
-extern unsigned char spi_rx[3];
-
 #endif	/* L6474_H */
 
