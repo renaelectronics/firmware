@@ -41,6 +41,7 @@ static void print_usage(int argc, char **argv){
 	printf("    -x, --example      print details example\n");
 	printf("    -z, --console      read from device\n");
 	printf("    -a, --force        force strobe to on for 5 seconds\n");
+	printf("    -y, --dump_only    dump the register data only\n");
 	printf("    -v, --version      read firmware version from device\n");
 	printf("    -p, --device       parport port device name, default is /dev/parport0\n");
 	printf("    -m, --motor        motor unit\n");
@@ -71,6 +72,7 @@ int get_motor_options(int argc, char **argv, struct motor_options *p)
 			{"example", no_argument, 0, 'x'},
 			{"console", no_argument, 0, 'z'},
 			{"force", no_argument, 0, 'a'},
+			{"dump_only", no_argument, 0, 'y'},
 			{"version", no_argument, 0, 'v'},
 			{"port", required_argument, 0, 'p'},
 			{"motor", required_argument, 0, 'm'},
@@ -120,6 +122,9 @@ int get_motor_options(int argc, char **argv, struct motor_options *p)
 			case 'a':
 				p->strobe = 1;
 				break;
+			case 'y':
+				p->dump_only= 1;
+				break;
 			case 'v':
 				p->version = 1;
 				break;
@@ -159,7 +164,10 @@ int get_motor_options(int argc, char **argv, struct motor_options *p)
 				p->random_toff = 1;
 				break;
 			case '?':
-				/* getopt_long already printed an error message. */
+				/* unrecognized option, getopt_long() already
+				 * printed the error message
+				 */
+				return 0;
 				break;
 
 			default:
