@@ -12,8 +12,13 @@
 #include "options.h"
 #include "parport.h"
 
+/* minimum and maximum current setting */
+#define MIN_CURRENT	(0.097)
+#define MAX_CURRENT	(2.034)
+
+
 /* ctrl-c signal handler */
-int main_running= 1;
+int main_running = 1;
 
 void signal_handler(int sig)
 {
@@ -77,7 +82,7 @@ int options_check(int argc, char **argv, struct motor_options *p)
 
 	if (outof_range("Motor unit", p->motor, 0, 3))
 		rc = 0;
-	else if (outof_range_float("Motor current", p->current, 0.097, 2.034))
+	else if (outof_range_float("Motor current", p->current, MIN_CURRENT, MAX_CURRENT))
 		rc = 0;
 	/* nominal slow deay time is 20us, ie register value of 9 */
 	else if (outof_range("Slow decay time", p->slow_decay_time, -7, 6))
@@ -97,10 +102,8 @@ int options_check(int argc, char **argv, struct motor_options *p)
 		printf("\t%s --help\n\n", argv[0]);
 	}
 
-	/* current, resolution 0.097 ie register 0 = 0.097A */
-	p->current = (int)(p->current / 0.097)-1;
-	if (p->current < 0) 
-		p->current = 0;
+	/* current, resolution MIN_CURRENT ie register 0 = MIN_CURRENT A */
+	p->current = ((int)(p->current / MIN_CURRENT)) * MIN_CURRENT;
 
 	return rc;
 }
@@ -128,7 +131,7 @@ void options_to_buf(struct motor_options *p, char *pbuf)
 	pbuf[EEPROM_DRVCONF + 2] = (value32 & 0x0000ff);
 
 	/* EEPROM_SGCSCONF */
-	n = abs((unsigned int)(p->current / 0.097) - 1);
+	n = abs((unsigned int)(p->current / MIN_CURRENT) - 1);
 	value32 = 0x0c0000 |
 		((p->stallGuard_filter & 1) << 16) |
 		((p->stallGuard_thres & 1) << 8) |
@@ -219,7 +222,7 @@ int main(int argc, char **argv)
 	strcpy(p.parport, "/dev/parport0");
 	p.motor = 0;
 	p.version = 0;
-	p.current = 0.097;
+	p.current = MIN_CURRENT;
 	p.pulse_multi = 0;
 	p.microsteps = 1;
 	p.chopper_mode = 1; /* constant TOFF mode */
@@ -250,14 +253,16 @@ int main(int argc, char **argv)
 	if (p.strobe){
 		/* force strobe to enable for few seconds */
 		parport_strobe(0, fd);
-		printf("Force strobe line to active for 10 seconds ");		
+		printf("Force strobe line to active for 5 seconds ");		
 		fflush(stdout);
-		for(n=0; n<10; n++){
+		for(n=0; n<5; n++){
 			printf(".");
 			fflush(stdout);
 			sleep(1);
 		}
 		printf("\n");
+		parport_strobe(1, fd);
+		goto out;
 	}
 
 	/* parport strobe disable */
@@ -305,9 +310,14 @@ int main(int argc, char **argv)
 	/* prepare data */
 	memset(data, 0, EEPROM_MAX_BYTE);
 	options_to_buf(&p, data);
-	dump_data(data, EEPROM_MAX_BYTE);
-	return;
 
+	/* dump the packet */
+	dump_data(data, EEPROM_MAX_BYTE);
+
+	/* dump only */
+	if (p.dump_only){
+		goto out;
+	}
 
 	/* write and read device info */
 	if (!p.readinfo){

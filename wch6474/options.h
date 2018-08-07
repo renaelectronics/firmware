@@ -54,6 +54,7 @@ struct motor_options{
 	int readinfo;
 	int console;
 	int strobe;
+	int dump_only;
 };
 
 int get_motor_options(int argc, char **argv, struct motor_options *p);
