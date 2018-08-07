@@ -40,9 +40,11 @@
 #define DEBUG_SHOW_TVAL     (0)
 #define DEBUG_SHOW_DOT      (0) /* continue print 0 */
 #define DEBUG_DEFAULT_VAL   (1)
+#define DEBUG_ALWAYS_ON     (0) /* enable the motor at bootup */
+#define DEBUG_RESET_CMD     (1) /* enable reset command */
 
 /* defaults */
-#define POWERUP_DELAY_SEC   (1)
+#define POWERUP_DELAY_SEC   (5)
 
 #if DEBUG_INFO
 #warning debug info enabled
@@ -93,15 +95,37 @@ unsigned char default_value[EEPROM_MAX_BYTE] = {
     0x0a, 0x00, 0x00, /* smarten */
     0x09, 0xc1, 0x87, /* chopconf */
     0x00, 0x00, 0x08, /* drvctrl */
+    0x00, 0x00, 0x00, /* status */
     0x00 /* checksum, to be filled in */
 };
 #endif
 unsigned char default_value[EEPROM_MAX_BYTE] = {
-    0x0e, 0x00, 0x00, /* drvconf */
-    0x0c, 0x00, 0x0a, /* sgcsconf */
+/*
+ *  ./wch6474 -m 0 -c 1.0 -s 8 -t -3 -w -3 -o 3
+ *
+ * 0e f0 00 
+ * 0c 00 09 
+ * 0a 00 00 
+ * 08 43 66 
+ * 00 02 05 
+ * 00 00 00
+ * 2b
+ * ---------------------------------------
+ *              Motor Unit : 0
+ *           Motor Current : 0.970000 A
+ *              Microsteps : 8
+ *    Pulse multiplication : 1
+ *         Slow Decay Time : -3
+ *         Fast Decay Time : -3
+ *        Sine Wave Offset : 3
+ * ---------------------------------------
+ */
+    0x0e, 0xf0, 0x00, /* drvconf */
+    0x0c, 0x00, 0x09, /* sgcsconf */
     0x0a, 0x00, 0x00, /* smarten */
-    0x08, 0x00, 0x00, /* chopconf */
-    0x00, 0x00, 0x08, /* drvctrl */
+    0x08, 0x43, 0x66, /* chopconf */
+    0x00, 0x02, 0x05, /* drvctrl */
+    0x00, 0x00, 0x00, /* status */
     0x00 /* checksum, to be filled in */
 };
 #endif
@@ -272,10 +296,29 @@ void main(void) {
     motor_disable(M4);
 
     /* initial value */
-    LED_OUT = 1;
+    LED_OUT = 0;
     CLEAR_DATA_BUF();
     state = STATE_IDLE;
 
+#if DEBUG_ALWAYS_ON
+#warning enable motor at boot 
+    DISABLE_INTERRUPT();
+    CLEAR_TOTAL_1MS_CLICK();
+    /* only enable the unit if the eeprom is valid */
+    for (n = M1; n <= M4; n++) {
+        if ((!blank_check(n)) && chksum_check(n)) {
+            /* enable motor */
+            motor_enable(n);
+        }
+    }
+    motor_enabled = 1;
+    /* copy motor stepping signals before enabling the motors */
+    PORTB = PORTA;
+    LED_OUT = 1;
+    for (;;)
+        PORTB = PORTA;
+#endif
+    
 state_machine_entry:
 
     /* motor enable signal, aka strobe signal is inverted */
@@ -291,6 +334,7 @@ state_machine_entry:
             motor_disable(M3);
             motor_disable(M4);
             motor_enabled = 0;
+            LED_OUT = 0; /* DoReadHostByte will also clear this bit */
             state = STATE_IDLE;
         }
 
@@ -321,6 +365,12 @@ state_machine_entry:
                 }
                 /* read or write action */
                 switch (rx) {
+#if DEBUG_RESET_CMD
+#warning debug reset command enabled
+                    case 'R':
+                        RESET();
+                        break;
+#endif
                     case 'v':
                         DoWriteHostByte(FIRMWARE_VERSION);
                         break;
@@ -333,6 +383,16 @@ state_machine_entry:
                         eeprom_offset = get_eeprom_offset(motor_unit);
                         for (n = 0; n < EEPROM_MAX_BYTE; n++) {
                             value = read_eeprom_data((unsigned char) (eeprom_offset + n));
+                            /* send the response back at EEPROM_STATUS */
+                            if (n == EEPROM_STATUS) {
+                                value = (get_response(motor_unit) & 0x0f0000UL) >> 16;
+                            }
+                            if (n == EEPROM_STATUS + 1) {
+                                value = (get_response(motor_unit) & 0xff00UL) >> 8;
+                            }
+                            if (n == EEPROM_STATUS + 2) {
+                                value = (get_response(motor_unit) & 0xffUL);
+                            }
                             DoWriteHostByte(value);
                         }
                         break;
@@ -389,54 +449,18 @@ state_machine_entry:
                 if ((!blank_check(n)) && chksum_check(n)) {
                     /* enable motor */
                     motor_enable(n);
-                    LED_OUT = 1;
                 }
             }
             motor_enabled = 1;
             /* copy motor stepping signals before enabling the motors */
             PORTB = PORTA;
-            LED_OUT = 0;
+            LED_OUT = 1;
         }
-
-        /* clear error status */
-#if (0)
-        get_config(M1);
-        get_config(M2);
-        get_config(M3);
-        get_config(M4);
-#endif
-
+        
         /* motor enable signal, aka strobe signal is inverted */
         while (MX_ENABLE == 0) {
-
             /* bit follower */
             PORTB = PORTA;
-
-#if (0)            
-            /* error detected */
-            if (FLAG_N == 0) {
-                ENABLE_INTERRUPT();
-                CLEAR_TOTAL_1MS_CLICK();
-                /* disable motor */
-                motor_disable(M1);
-                motor_disable(M2);
-                motor_disable(M3);
-                motor_disable(M4);
-                motor_enabled = 0;
-                state = STATE_IDLE;
-                /* blink LED */
-                for (;;) {
-                    LED_OUT = (unsigned char) ~LED_OUT;
-                    CLEAR_TOTAL_1MS_CLICK();
-                    while (total_1ms_tick < 300L/* 0.3 second */);
-                    /* motor enable signal, aka strobe signal is inverted */
-                    if (MX_ENABLE == 1) {
-                        LED_OUT = 1;
-                        break;
-                    }
-                }
-            }
-#endif            
         }
         state = STATE_IDLE;
     }
