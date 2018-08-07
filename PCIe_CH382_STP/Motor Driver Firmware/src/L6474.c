@@ -26,12 +26,16 @@ extern unsigned char debug_value;
 /* saved register value */
 static unsigned long sgcsconf[4];
 static unsigned long chopconf[4];
-static unsigned long response[4];
+u32 response[4];
 
 /* variables */
 unsigned char spi_rx;
 unsigned char spi_tx[3];
 static unsigned char eeprom_data[3];
+static char tx_buf;
+static int tx_buf_bit;
+static char rx_index;
+static int rx_buf_bit;
 
 /* read eeprom byte by byte and return the unsigned long register value */
 static u32 u8tou32(u8 byte) {
@@ -45,11 +49,55 @@ static unsigned long eeprom_reg(u8 addr, u32 fixed, u32 mask) {
     value = (u8tou32(read_eeprom_data(addr)) << 16) & 0x0f0000UL;
     value |= ((u32) (u8tou32(read_eeprom_data((u8) (addr + 1))) << 8));
     value |= ((u32) (u8tou32(read_eeprom_data((u8) (addr + 2)))));
-#if (0)    
     value &= mask;
     value |= fixed;
-#endif
     return value;
+}
+
+/* must call init_rx_tx before calling in_rx and out_tx */
+void init_rx_tx()
+{
+    /* initial tx rx variables */
+	tx_buf = 0;
+	tx_buf_bit = 0;
+	rx_index = 0;
+	rx_buf_bit = 0;
+}
+
+void in_rx(unsigned char value)
+ {
+    int n;
+    for (n = 7; n >= 0; n--) {
+        response[rx_index] = response[rx_index] << 1;
+        if (value & (1 << n))
+            response[rx_index] |= 1;
+        rx_buf_bit++;
+        if (rx_buf_bit == 20) {
+            rx_index++;
+            rx_buf_bit = 0;
+        }
+    }
+}
+
+void out_tx(u32 value32) {
+    int n;
+
+    /* shift 20 bit data into tx_buf */
+    for (n = 19; n >= 0; n--) {
+        tx_buf = (char) (tx_buf << 1);
+        if (value32 & (1UL << n)) {
+            tx_buf = (char) (tx_buf | 1);
+        }
+        tx_buf_bit++;
+        if (tx_buf_bit == 8) {
+            /* send the 8 bit out and read the response back*/
+            while (WriteSPI(tx_buf));
+            /* store the response bits */
+            in_rx(SSPBUF);
+            tx_buf_bit = 0;
+            tx_buf = 0;
+        }
+    }
 }
 
 /* Send SPI data and read from the chain 
@@ -62,11 +110,25 @@ static unsigned long eeprom_reg(u8 addr, u32 fixed, u32 mask) {
  * 
  */
 static void write_spi_chain(char unit, unsigned long data) {
-    unsigned char n;
+    int m;
+    u32 value32;
+
+    /* clear response and prepare stuff value for the chain */
+    for (m = 0; m < 3; m++) {
+        response[(unsigned char)m] = 0UL;
+    }
     
-    /* clear response */
-    for(n=0;n<3;n++){
-        response[n] = 0UL;
+    /* initialize variables */
+    init_rx_tx();
+    
+    /* send motor register */
+    for (m = 0; m <= 3; m++) {
+        /* motor stuff value */
+        value32 = sgcsconf[(unsigned char)m];
+        if (m == unit){
+            value32 = data & 0xfffffUL;
+        }
+        out_tx(value32);
     }
     
     /* CS_N must be low to select the motor driver chip */
@@ -75,21 +137,6 @@ static void write_spi_chain(char unit, unsigned long data) {
     /* 10 us delay */
     delay_us(10);
 
-    /* write to and read from spi */
-    while (WriteSPI(((data & 0x0f0000UL) >> 16)));
-    response[n] |= SSPBUF;
-    response[n] = response[n] << 8;
-
-    while (WriteSPI(((data & 0xff00UL) >> 8)));
-    response[n] |= SSPBUF;
-    response[n] = response[n] << 8;
-
-    while (WriteSPI((data & 0xffUL)));
-    response[n] |= SSPBUF;
-
-    /* bit adjustment for the size of the chain */
-    response[n] = response[n] >> 4;
-        
     /* CS_N must be raised and be kept high for a while */
     CS_N = 1;
 
@@ -97,6 +144,7 @@ static void write_spi_chain(char unit, unsigned long data) {
     delay_us(10);
     return;
 }
+
 static void do_motor_enable(char unit, char enable) {
     u32 value;
 
@@ -131,6 +179,10 @@ void motor_disable(char unit) {
     do_motor_enable(unit, 0);
 }
 
+unsigned long get_response(char unit) {
+    return response[unit];
+}
+
 /* read from eeprom and copy into registers */
 void copy_from_eeprom(char unit) {
     unsigned char offset;
@@ -147,32 +199,33 @@ void copy_from_eeprom(char unit) {
     offset = get_eeprom_offset(unit);
 
     /* EEPROM_DRVCONF */
-    value = eeprom_reg((u8)(offset + EEPROM_DRVCONF), DRVCONF_VALUE, DRVCONF_MASK);
+    value = eeprom_reg((u8) (offset + EEPROM_DRVCONF), DRVCONF_VALUE, DRVCONF_MASK);
     write_spi_chain(unit, value);
 
-    /* EEPROM_SGCSCONF */
-    value = eeprom_reg((u8)(offset + EEPROM_SGCSCONF), SGCSCONF_VALUE, SGCSCONF_MASK);
+    /* EEPROM_SGCSCONF *//* stuff value for spi data chain */
+    value = eeprom_reg((u8) (offset + EEPROM_SGCSCONF), SGCSCONF_VALUE, SGCSCONF_MASK);
+    sgcsconf[unit] = value;
     write_spi_chain(unit, value);
 
     /* EEPROM_SMARTEN */
-    value = eeprom_reg((u8)(offset + EEPROM_SMARTEN), SMARTEN_VALUE, SMARTEN_MASK);
+    value = eeprom_reg((u8) (offset + EEPROM_SMARTEN), SMARTEN_VALUE, SMARTEN_MASK);
     write_spi_chain(unit, value);
 
     /* EEPROM_CHOPCONF */
-    value = eeprom_reg((u8)(offset + EEPROM_CHOPCONF), CHOPCONF_VALUE, CHOPCONF_MASK);
+    value = eeprom_reg((u8) (offset + EEPROM_CHOPCONF), CHOPCONF_VALUE, CHOPCONF_MASK);
     chopconf[unit] = value;
     /* make sure TOFF is 0 to disable the motor */
     write_spi_chain(unit, value & 0x0ffff0UL);
 
     /* EEPROM_DRVCTRL */
-    value = eeprom_reg((u8)(offset + EEPROM_DRVCTRL), DRVCTRL_VALUE, DRVCTRL_MASK);
+    value = eeprom_reg((u8) (offset + EEPROM_DRVCTRL), DRVCTRL_VALUE, DRVCTRL_MASK);
     write_spi_chain(unit, value);
 }
 
 unsigned char blank_check(char unit) {
     unsigned char n;
     unsigned char offset;
-    
+
     /* get offset address */
     offset = get_eeprom_offset(unit);
     /* blank check */
@@ -188,7 +241,7 @@ unsigned char chksum_check(char unit) {
     unsigned char n;
     unsigned char value;
     unsigned char offset;
-    
+
     /* get offset address */
     offset = get_eeprom_offset(unit);
     /* checksum */
